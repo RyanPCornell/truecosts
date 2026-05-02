@@ -39,9 +39,7 @@ header{background:var(--forest);position:sticky;top:0;z-index:50;border-bottom:1
 .pb{padding:1.2rem 1.4rem}
 
 /* CONTROLS COL */
-.ctrl-col{display:flex;flex-direction:column;gap:1.2rem;position:sticky;top:74px;max-height:calc(100vh - 90px);overflow-y:auto;padding-right:4px}
-.ctrl-col::-webkit-scrollbar{width:4px}
-.ctrl-col::-webkit-scrollbar-thumb{background:var(--cream-dk);border-radius:2px}
+.ctrl-col{display:flex;flex-direction:column;gap:1.2rem}
 
 /* CAT LABEL */
 .cat{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:.5rem;margin:1rem 0 .8rem}
@@ -141,7 +139,7 @@ canvas{display:block}
 @keyframes pop{from{opacity:.3;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 .pop{animation:pop .28s ease both}
 
-@media(max-width:1100px){.wrap{grid-template-columns:1fr;padding:1.25rem}.ctrl-col{position:static;max-height:none;overflow-y:visible}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr;padding:1.25rem}.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.cards{grid-template-columns:1fr 1fr}.total{grid-template-columns:1fr}.t-pills{align-items:flex-start}.hdr-badge{display:none}}
 
 /* ── HARM TYPE SECTION ── */
