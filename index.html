@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>True Cost Calculator — Externalities of Daily Life</title>
+<style>
+:root {
+  --forest:#1a3028; --forest-mid:#254538; --sage:#4a7c59; --sage-lt:#7aab8a;
+  --sage-pale:#c8e0cf; --gold:#c8963e; --gold-lt:#e8b86d; --gold-pale:#f5e6cc;
+  --cream:#f5f0e8; --cream-dk:#ede6d6; --ink:#0f1e17; --mist:#8ca89a;
+  --white:#fdfaf5; --red:#c94040; --blue:#5b9bd5; --purple:#a07cc5;
+  --r:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--cream);color:var(--ink);min-height:100vh}
+.sans{font-family:system-ui,-apple-system,sans-serif}
+.mono{font-family:'Courier New',monospace}
+
+/* HEADER */
+header{background:var(--forest);position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,0.06)}
+.hdr{max-width:1440px;margin:0 auto;padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between}
+.hdr-title{font-size:1.15rem;color:var(--white);letter-spacing:.01em}
+.hdr-sub{font-family:'Courier New',monospace;font-size:.6rem;color:var(--sage-lt);letter-spacing:.12em;text-transform:uppercase;margin-left:.75rem}
+.hdr-right{display:flex;align-items:center;gap:1rem}
+.hdr-badge{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.28rem .65rem;border:1px solid rgba(122,171,138,.35);color:var(--sage-lt);border-radius:2px}
+.hdr-reset{font-family:system-ui,sans-serif;font-size:.75rem;font-weight:500;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(253,250,245,.7);padding:.28rem .75rem;border-radius:3px;cursor:pointer;transition:all .15s}
+.hdr-reset:hover{background:rgba(255,255,255,.16);color:var(--white)}
+
+/* LAYOUT */
+.wrap{max-width:1440px;margin:0 auto;padding:1.75rem 2rem 4rem;display:grid;grid-template-columns:400px 1fr;gap:1.75rem;align-items:start}
+
+/* PANEL */
+.panel{background:var(--white);border-radius:var(--r);border:1px solid var(--cream-dk);overflow:hidden}
+.ph{padding:.95rem 1.4rem;border-bottom:1px solid var(--cream-dk);display:flex;align-items:center;gap:.6rem}
+.ph-icon{font-size:1rem}
+.ph-title{font-size:1.05rem;color:var(--forest)}
+.pb{padding:1.2rem 1.4rem}
+
+/* CONTROLS COL */
+.ctrl-col{display:flex;flex-direction:column;gap:1.2rem;position:sticky;top:74px;max-height:calc(100vh - 90px);overflow-y:auto;padding-right:4px}
+.ctrl-col::-webkit-scrollbar{width:4px}
+.ctrl-col::-webkit-scrollbar-thumb{background:var(--cream-dk);border-radius:2px}
+
+/* CAT LABEL */
+.cat{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:.5rem;margin:1rem 0 .8rem}
+.cat:first-child{margin-top:0}
+.cat::after{content:'';flex:1;height:1px;background:var(--cream-dk)}
+
+/* CONTROL ROW */
+.cr{margin-bottom:1rem}
+.cr:last-child{margin-bottom:0}
+.cl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem}
+.cn{font-family:system-ui,sans-serif;font-size:.8rem;font-weight:500;color:var(--forest)}
+.cv{font-family:'Courier New',monospace;font-size:.72rem;color:var(--sage);font-weight:500}
+.tick-row{display:flex;justify-content:space-between;margin-top:.25rem}
+.tick{font-family:system-ui,sans-serif;font-size:.62rem;color:var(--mist)}
+
+/* SLIDER */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:var(--cream-dk);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--forest);cursor:pointer;border:2px solid var(--white);box-shadow:0 1px 4px rgba(15,30,23,.25);transition:transform .15s,background .15s}
+input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15);background:var(--sage)}
+
+/* SEGMENT */
+.seg{display:flex;background:var(--cream);border-radius:4px;padding:3px;gap:2px}
+.seg-btn{flex:1;padding:.38rem .25rem;font-family:system-ui,sans-serif;font-size:.71rem;font-weight:500;text-align:center;background:transparent;border:none;border-radius:3px;color:var(--mist);cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.2}
+.seg-btn.on{background:var(--forest);color:var(--white);box-shadow:0 1px 4px rgba(15,30,23,.2)}
+.seg-btn:hover:not(.on){background:var(--cream-dk);color:var(--forest)}
+
+/* SELECT */
+select{width:100%;padding:.48rem 2rem .48rem .7rem;font-family:system-ui,sans-serif;font-size:.8rem;background:var(--cream);border:1px solid var(--cream-dk);border-radius:4px;color:var(--forest);cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a7c59' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center}
+select:focus{border-color:var(--sage)}
+
+/* OUTPUT COL */
+.out-col{display:flex;flex-direction:column;gap:1.2rem}
+
+/* TOTAL BANNER */
+.total{background:var(--forest);border-radius:var(--r);padding:1.6rem 1.8rem;display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:center}
+.t-eye{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sage-lt);margin-bottom:.25rem}
+.t-num{font-size:clamp(2.2rem,3vw,3rem);color:var(--white);line-height:1;margin-bottom:.25rem}
+.t-sub{font-family:system-ui,sans-serif;font-size:.75rem;color:rgba(253,250,245,.45);font-weight:300}
+.t-pills{display:flex;flex-direction:column;gap:.45rem;align-items:flex-end}
+.pill{font-family:'Courier New',monospace;font-size:.66rem;padding:.3rem .7rem;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(253,250,245,.65);white-space:nowrap}
+.pill.good{background:rgba(74,124,89,.35);color:var(--sage-pale)}
+.pill.bad{background:rgba(201,64,64,.28);color:#f5a0a0}
+.pill.warn{background:rgba(200,150,62,.3);color:var(--gold-lt)}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.card{background:var(--white);border:1px solid var(--cream-dk);border-radius:var(--r);padding:1rem 1.1rem;position:relative;overflow:hidden;transition:box-shadow .2s}
+.card:hover{box-shadow:0 4px 20px rgba(15,30,23,.09)}
+.card-bar{position:absolute;bottom:0;left:0;right:0;height:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.card-ico{font-size:1.2rem;margin-bottom:.4rem;display:block}
+.card-lbl{font-family:'Courier New',monospace;font-size:.62rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mist);margin-bottom:.25rem}
+.card-val{font-size:1.4rem;color:var(--forest);line-height:1}
+.card-unit{font-family:'Courier New',monospace;font-size:.62rem;color:var(--mist);margin-top:.15rem}
+.card-pct{font-family:'Courier New',monospace;font-size:.62rem;margin-top:.1rem}
+
+/* CHART TABS */
+.chart-tabs{display:flex;gap:.2rem;margin-bottom:1.25rem;border-bottom:1px solid var(--cream-dk)}
+.ctab{font-family:system-ui,sans-serif;font-size:.76rem;font-weight:500;padding:.45rem 1rem;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--mist);cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.ctab.on{color:var(--forest);border-bottom-color:var(--gold)}
+.ctab:hover:not(.on){color:var(--forest)}
+.cview{display:none}
+.cview.on{display:block}
+.chart-wrap{position:relative;height:300px}
+canvas{display:block}
+
+/* BREAKDOWN TABLE */
+.bk-table{width:100%;border-collapse:collapse}
+.bk-table th{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);padding:.65rem 1.4rem;text-align:left;border-bottom:1px solid var(--cream-dk);background:var(--cream)}
+.bk-table th:last-child,.bk-table td:last-child{text-align:right}
+.bk-table td{font-family:system-ui,sans-serif;padding:.75rem 1.4rem;font-size:.82rem;border-bottom:1px solid rgba(237,230,214,.5)}
+.bk-table tr:last-child td{border-bottom:none}
+.bk-table tbody tr:hover td{background:rgba(245,240,232,.6)}
+.td-cat{font-weight:500;color:var(--forest);display:flex;align-items:center;gap:.45rem}
+.td-desc{color:var(--mist);font-size:.75rem}
+.td-cost{font-family:'Courier New',monospace;font-weight:700}
+.td-cost.hi{color:var(--red)}
+.td-cost.lo{color:var(--sage)}
+.mini-bar-wrap{width:90px;height:5px;background:var(--cream-dk);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:.4rem}
+.mini-bar{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* INSIGHT */
+.insight{background:var(--gold-pale);border:1px solid rgba(200,150,62,.25);border-left:3px solid var(--gold);border-radius:var(--r);padding:1rem 1.25rem;font-family:system-ui,sans-serif;font-size:.83rem;line-height:1.65;color:var(--forest);display:none}
+.insight.show{display:block}
+.insight strong{font-weight:600}
+
+/* METH NOTE */
+.meth{font-family:system-ui,sans-serif;font-size:.71rem;color:var(--mist);font-style:italic;padding:.7rem 1.4rem;background:var(--cream);border-top:1px solid var(--cream-dk);line-height:1.6}
+
+/* SOURCES */
+.src-item{display:flex;gap:.65rem;padding:.55rem 0;border-bottom:1px solid rgba(237,230,214,.5);align-items:baseline}
+.src-item:last-child{border-bottom:none}
+.src-n{font-family:'Courier New',monospace;font-size:.6rem;color:var(--gold);flex-shrink:0}
+.src-t{font-family:system-ui,sans-serif;font-size:.76rem;line-height:1.6;color:#4a6055;font-weight:300}
+.src-t em{font-style:italic;color:var(--forest-mid)}
+
+/* ANIMATIONS */
+@keyframes pop{from{opacity:.3;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.pop{animation:pop .28s ease both}
+
+@media(max-width:1100px){.wrap{grid-template-columns:1fr;padding:1.25rem}.ctrl-col{position:static;max-height:none;overflow-y:visible}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.cards{grid-template-columns:1fr 1fr}.total{grid-template-columns:1fr}.t-pills{align-items:flex-start}.hdr-badge{display:none}}
+
+/* ── HARM TYPE SECTION ── */
+.harm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.harm-card{background:var(--cream);border-radius:5px;padding:1.1rem 1.2rem;border:1px solid var(--cream-dk);position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s}
+.harm-card:hover{box-shadow:0 6px 24px rgba(15,30,23,.1);transform:translateY(-1px)}
+.harm-card-accent{position:absolute;top:0;left:0;right:0;height:3px}
+.harm-icon{font-size:1.4rem;margin-bottom:.5rem;display:block}
+.harm-name{font-family:'Courier New',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);margin-bottom:.3rem}
+.harm-val{font-size:1.2rem;color:var(--forest);line-height:1;margin-bottom:.15rem}
+.harm-pct{font-family:'Courier New',monospace;font-size:.7rem;font-weight:600;margin-bottom:.45rem}
+.harm-desc{font-family:system-ui,sans-serif;font-size:.71rem;line-height:1.55;color:#5a7a6a;font-weight:300}
+.harm-bar-track{height:4px;background:rgba(0,0,0,.07);border-radius:2px;margin-top:.7rem;overflow:hidden}
+.harm-bar-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.wf-wrap{position:relative;height:240px;margin-bottom:.5rem}
+.wf-legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;margin-top:.6rem}
+.wf-leg-item{display:flex;align-items:center;gap:.4rem;font-family:system-ui,sans-serif;font-size:.71rem;color:#5a7a6a}
+.wf-leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.harm-tabs{display:flex;gap:.2rem;margin-bottom:1.25rem;border-bottom:1px solid var(--cream-dk)}
+.htab{font-family:system-ui,sans-serif;font-size:.76rem;font-weight:500;padding:.45rem 1rem;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--mist);cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.htab.on{color:var(--forest);border-bottom-color:#c94040}
+.htab:hover:not(.on){color:var(--forest)}
+.hview{display:none}
+.hview.on{display:block}
+.src-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--cream-dk)}
+.src-chip{font-family:'Courier New',monospace;font-size:.62rem;padding:.2rem .55rem;background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.22);color:var(--gold);border-radius:3px}
+@media(max-width:900px){.harm-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.harm-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div style="display:flex;align-items:baseline">
+      <span class="hdr-title">True Cost Calculator</span>
+      <span class="hdr-sub">Externalities of Daily Life</span>
+    </div>
+    <div class="hdr-right">
+      <span class="hdr-badge">Academic Sources · Annual Estimates · 2024 USD</span>
+      <button class="hdr-reset" onclick="resetAll()">↺ Reset Defaults</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- ══ CONTROLS ══ -->
+  <div class="ctrl-col">
+
+    <!-- TRANSPORT -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">🚗</span><span class="ph-title">Transportation</span></div>
+      <div class="pb">
+        <div class="cat">Vehicle</div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Primary vehicle type</span></div>
+          <div class="seg" id="sg-vehicle">
+            <button class="seg-btn on" onclick="setSeg('vehicle','ev',this)">⚡ EV</button>
+            <button class="seg-btn" onclick="setSeg('vehicle','hybrid',this)">🔋 Hybrid</button>
+            <button class="seg-btn" onclick="setSeg('vehicle','gas',this)">⛽ Gas</button>
+            <button class="seg-btn" onclick="setSeg('vehicle','none',this)">🚶 No Car</button>
+          </div>
+        </div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Miles driven per year</span><span class="cv" id="dv-miles">12,000 mi</span></div>
+          <input type="range" id="sl-miles" min="0" max="40000" step="500" value="12000" oninput="slVal('miles',this.value);go()">
+          <div class="tick-row"><span class="tick">0</span><span class="tick">20k</span><span class="tick">40k</span></div>
+        </div>
+        <div class="cat">Air Travel</div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Short-haul flights / year <small style="color:var(--mist);font-size:.72em">&lt;3 hrs</small></span><span class="cv" id="dv-fshort">2</span></div>
+          <input type="range" id="sl-fshort" min="0" max="30" step="1" value="2" oninput="slVal('fshort',this.value);go()">
+          <div class="tick-row"><span class="tick">0</span><span class="tick">15</span><span class="tick">30</span></div>
+        </div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Long-haul flights / year <small style="color:var(--mist);font-size:.72em">&gt;3 hrs</small></span><span class="cv" id="dv-flong">1</span></div>
+          <input type="range" id="sl-flong" min="0" max="20" step="1" value="1" oninput="slVal('flong',this.value);go()">
+          <div class="tick-row"><span class="tick">0</span><span class="tick">10</span><span class="tick">20</span></div>
+        </div>
+        <div class="cat">Public Transit</div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Bus / train miles per year</span><span class="cv" id="dv-transit">500 mi</span></div>
+          <input type="range" id="sl-transit" min="0" max="10000" step="100" value="500" oninput="slVal('transit',this.value);go()">
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOD -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">🌿</span><span class="ph-title">Food &amp; Diet</span></div>
+      <div class="pb">
+        <div class="cat">Diet Pattern</div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Primary diet type</span></div>
+          <div class="seg" id="sg-diet">
+            <button class="seg-btn" onclick="setSeg('diet','vegan',this)">🌱 Vegan</button>
+            <button class="seg-btn" onclick="setSeg('diet','veggie',this)">🥦 Veggie</button>
+            <button class="seg-btn on" onclick="setSeg('diet','mixed',this)">🍽️ Mixed</button>
+            <button class="seg-btn" onclick="setSeg('diet','meat',this)">🥩 Meat-heavy</button>
+          </div>
+        </div>
+        <div class="cr" style="margin-top:.8rem">
+          <div class="cl"><span class="cn">Food waste level</span><span class="cv" id="dv-waste">Average</span></div>
+          <input type="range" id="sl-waste" min="0" max="2" step="1" value="1" oninput="slVal('waste',this.value);go()">
+          <div class="tick-row"><span class="tick">Minimal</span><span class="tick">Average</span><span class="tick">High</span></div>
+        </div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Local / seasonal sourcing</span><span class="cv" id="dv-local">Some local</span></div>
+          <input type="range" id="sl-local" min="0" max="2" step="1" value="1" oninput="slVal('local',this.value);go()">
+          <div class="tick-row"><span class="tick">Mostly imported</span><span class="tick">Some local</span><span class="tick">Mostly local</span></div>
+        </div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Takeout / delivery meals per week</span><span class="cv" id="dv-takeout">2</span></div>
+          <input type="range" id="sl-takeout" min="0" max="21" step="1" value="2" oninput="slVal('takeout',this.value);go()">
+        </div>
+      </div>
+    </div>
+
+    <!-- ENERGY -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">⚡</span><span class="ph-title">Home Energy</span></div>
+      <div class="pb">
+        <div class="cat">Electricity</div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Grid power source</span></div>
+          <select id="sel-grid" onchange="s.grid=this.value;go()">
+            <option value="coal">Coal-heavy grid</option>
+            <option value="natgas" selected>Natural Gas (avg US)</option>
+            <option value="mixed">Average US mix</option>
+            <option value="nuclear">Nuclear-heavy grid</option>
+            <option value="wind">Wind-heavy grid</option>
+            <option value="solar">Solar-heavy grid</option>
+          </select>
+        </div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Annual electricity use</span><span class="cv" id="dv-kwh">10,500 kWh</span></div>
+          <input type="range" id="sl-kwh" min="1000" max="35000" step="500" value="10500" oninput="slVal('kwh',this.value);go()">
+          <div class="tick-row"><span class="tick">1k kWh</span><span class="tick">US avg ~10.5k</span><span class="tick">35k kWh</span></div>
+        </div>
+        <div class="cat">Heating</div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Home heating source</span></div>
+          <div class="seg" id="sg-heat">
+            <button class="seg-btn on" onclick="setSeg('heat','natgas',this)">🔥 Gas</button>
+            <button class="seg-btn" onclick="setSeg('heat','heatpump',this)">🌡️ Heat Pump</button>
+            <button class="seg-btn" onclick="setSeg('heat','electric',this)">⚡ Electric</button>
+            <button class="seg-btn" onclick="setSeg('heat','minimal',this)">☀️ Minimal</button>
+          </div>
+        </div>
+        <div class="cr">
+          <div class="cl"><span class="cn">Home size (sq ft)</span><span class="cv" id="dv-sqft">1,800 sq ft</span></div>
+          <input type="range" id="sl-sqft" min="400" max="6000" step="100" value="1800" oninput="slVal('sqft',this.value);go()">
+          <div class="tick-row"><span class="tick">Small apt</span><span class="tick">Avg home</span><span class="tick">Large home</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONSUMER -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">🛍️</span><span class="ph-title">Consumer Choices</span></div>
+      <div class="pb">
+        <div class="cat">Clothing &amp; Electronics</div>
+        <div class="cr">
+          <div class="cl"><span class="cn">New clothing items / year</span><span class="cv" id="dv-clothes">25</span></div>
+          <input type="range" id="sl-clothes" min="0" max="150" step="5" value="25" oninput="slVal('clothes',this.value);go()">
+          <div class="tick-row"><span class="tick">0</span><span class="tick">75</span><span class="tick">150</span></div>
+        </div>
+        <div class="cr">
+          <div class="cl"><span class="cn">New electronic devices / year</span><span class="cv" id="dv-elec">1</span></div>
+          <input type="range" id="sl-elec" min="0" max="12" step="1" value="1" oninput="slVal('elec',this.value);go()">
+        </div>
+        <div class="cat">Lifestyle</div>
+        <div class="cr">
+          <div class="cl"><span class="cn">General consumer spending level</span></div>
+          <div class="seg" id="sg-spend">
+            <button class="seg-btn" onclick="setSeg('spend','minimal',this)">Minimal</button>
+            <button class="seg-btn on" onclick="setSeg('spend','average',this)">Average</button>
+            <button class="seg-btn" onclick="setSeg('spend','high',this)">High</button>
+            <button class="seg-btn" onclick="setSeg('spend','very-high',this)">Very High</button>
+          </div>
+        </div>
+        <div class="cr" style="margin-top:.8rem">
+          <div class="cl"><span class="cn">Daily streaming / internet use</span><span class="cv" id="dv-stream">4 hrs/day</span></div>
+          <input type="range" id="sl-stream" min="0" max="16" step="1" value="4" oninput="slVal('stream',this.value);go()">
+          <div class="tick-row"><span class="tick">0 hrs</span><span class="tick">8 hrs</span><span class="tick">16 hrs</span></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /ctrl-col -->
+
+  <!-- ══ OUTPUT ══ -->
+  <div class="out-col">
+
+    <!-- TOTAL -->
+    <div class="total">
+      <div>
+        <div class="t-eye">Total Annual Externality Cost</div>
+        <div class="t-num" id="t-num">$—</div>
+        <div class="t-sub sans">Unpriced social &amp; environmental costs imposed on society per year</div>
+      </div>
+      <div class="t-pills">
+        <div class="pill" id="p-avg">vs. US avg: —</div>
+        <div class="pill" id="p-co2">CO₂e: — t/yr</div>
+        <div class="pill" id="p-grade">—</div>
+      </div>
+    </div>
+
+    <!-- INSIGHT -->
+    <div class="insight sans" id="insight-box">
+      <strong>💡 Insight:</strong> <span id="insight-text"></span>
+    </div>
+
+    <!-- CARDS -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-bar" id="cb-transport" style="background:var(--sage)"></div>
+        <span class="card-ico">🚗</span>
+        <div class="card-lbl">Transportation</div>
+        <div class="card-val" id="cv-transport">$—</div>
+        <div class="card-unit">per year</div>
+        <div class="card-pct" id="cp-transport" style="color:var(--sage)"></div>
+      </div>
+      <div class="card">
+        <div class="card-bar" id="cb-food" style="background:var(--gold)"></div>
+        <span class="card-ico">🌿</span>
+        <div class="card-lbl">Food</div>
+        <div class="card-val" id="cv-food">$—</div>
+        <div class="card-unit">per year</div>
+        <div class="card-pct" id="cp-food" style="color:var(--gold)"></div>
+      </div>
+      <div class="card">
+        <div class="card-bar" id="cb-energy" style="background:var(--blue)"></div>
+        <span class="card-ico">⚡</span>
+        <div class="card-lbl">Energy</div>
+        <div class="card-val" id="cv-energy">$—</div>
+        <div class="card-unit">per year</div>
+        <div class="card-pct" id="cp-energy" style="color:var(--blue)"></div>
+      </div>
+      <div class="card">
+        <div class="card-bar" id="cb-consumer" style="background:var(--purple)"></div>
+        <span class="card-ico">🛍️</span>
+        <div class="card-lbl">Consumer</div>
+        <div class="card-val" id="cv-consumer">$—</div>
+        <div class="card-unit">per year</div>
+        <div class="card-pct" id="cp-consumer" style="color:var(--purple)"></div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">📊</span><span class="ph-title">Externality Breakdown</span></div>
+      <div class="pb">
+        <div class="chart-tabs">
+          <button class="ctab on" onclick="switchTab('bar',this)">By Category</button>
+          <button class="ctab" onclick="switchTab('donut',this)">Composition</button>
+          <button class="ctab" onclick="switchTab('compare',this)">vs. Benchmarks</button>
+          <button class="ctab" onclick="switchTab('sens',this)">Vehicle Sensitivity</button>
+        </div>
+        <div class="cview on" id="cv-bar"><div class="chart-wrap"><canvas id="ch-bar"></canvas></div></div>
+        <div class="cview" id="cv-donut"><div class="chart-wrap"><canvas id="ch-donut"></canvas></div></div>
+        <div class="cview" id="cv-compare"><div class="chart-wrap"><canvas id="ch-compare"></canvas></div></div>
+        <div class="cview" id="cv-sens"><div class="chart-wrap"><canvas id="ch-sens"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- BREAKDOWN TABLE -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">📋</span><span class="ph-title">Line-Item Breakdown</span></div>
+      <table class="bk-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Your Inputs</th>
+            <th style="width:140px">Relative Impact</th>
+            <th>Annual Cost</th>
+          </tr>
+        </thead>
+        <tbody id="bk-body"><tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--mist)">Loading…</td></tr></tbody>
+      </table>
+      <div class="meth">All figures in 2024 USD. Social Cost of Carbon: $190/tCO₂e (EPA, 2023, 2.5% discount rate). Diet externalities from FAO True Cost of Food (2021) &amp; True Price Foundation (2022). Vehicle rates from NAS Hidden Costs of Energy (2010) + EPA SCC. Flight RF multiplier: 1.9× (IPCC AR6, 2022). Grid externalities: Epstein et al. (2011) for coal; NREL lifecycle assessments for renewables/nuclear.</div>
+    </div>
+
+    <!-- HARM TYPE SECTION -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">⚠️</span><span class="ph-title">What Type of Harm Do These Externalities Cause?</span></div>
+      <div class="pb">
+        <div class="harm-tabs">
+          <button class="htab on" onclick="switchHarm('cards',this)">Harm Categories</button>
+          <button class="htab" onclick="switchHarm('waterfall',this)">Cost Waterfall</button>
+          <button class="htab" onclick="switchHarm('compare',this)">Harm vs. Sector</button>
+        </div>
+
+        <!-- CARDS VIEW -->
+        <div class="hview on" id="hv-cards">
+          <div class="harm-grid" id="harm-grid">
+            <!-- populated by JS -->
+          </div>
+          <div class="src-chips">
+            <span style="font-family:system-ui,sans-serif;font-size:.71rem;color:var(--mist);margin-right:.25rem">Sources:</span>
+            <span class="src-chip">[1] EPA SCC 2023</span>
+            <span class="src-chip">[2] NAS Hidden Costs 2010</span>
+            <span class="src-chip">[3] Epstein et al. 2011</span>
+            <span class="src-chip">[4] FAO True Cost 2021</span>
+            <span class="src-chip">[6] IPCC AR6 2022</span>
+            <span class="src-chip">[8] Ellen MacArthur 2017</span>
+          </div>
+        </div>
+
+        <!-- WATERFALL VIEW -->
+        <div class="hview" id="hv-waterfall">
+          <div class="wf-wrap"><canvas id="ch-waterfall"></canvas></div>
+          <div class="wf-legend" id="wf-legend"></div>
+          <div class="src-chips">
+            <span style="font-family:system-ui,sans-serif;font-size:.71rem;color:var(--mist);margin-right:.25rem">Sources:</span>
+            <span class="src-chip">[1] EPA SCC 2023</span>
+            <span class="src-chip">[2] NAS 2010</span>
+            <span class="src-chip">[3] Epstein 2011</span>
+            <span class="src-chip">[4] FAO 2021</span>
+          </div>
+        </div>
+
+        <!-- SECTOR COMPARE VIEW -->
+        <div class="hview" id="hv-compare">
+          <p style="font-family:system-ui,sans-serif;font-size:.78rem;color:#5a7a6a;margin-bottom:1rem;font-weight:300;line-height:1.6">
+            How your personal externalities compare to the <strong>harm-type breakdown</strong> reported in the academic literature for each sector. Bars show your cost vs. the sector-wide proportion from published studies.
+          </p>
+          <div class="wf-wrap" style="height:280px"><canvas id="ch-harm-compare"></canvas></div>
+          <div class="src-chips">
+            <span style="font-family:system-ui,sans-serif;font-size:.71rem;color:var(--mist);margin-right:.25rem">Sector proportions from:</span>
+            <span class="src-chip">[2] NAS 2010</span>
+            <span class="src-chip">[3] Epstein 2011</span>
+            <span class="src-chip">[4] FAO 2021</span>
+            <span class="src-chip">[5] True Price 2022</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SOURCES -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">📚</span><span class="ph-title">Academic Sources &amp; Methodology</span></div>
+      <div class="pb">
+        <div class="src-item"><div class="src-n">[1]</div><div class="src-t">U.S. EPA. (2023). <em>Revised 2023 supplementary material for the regulatory impact analysis: Social cost of greenhouse gases.</em> Central estimate: $190/tCO₂e at 2.5% discount rate. Applied to all carbon emissions throughout this calculator.</div></div>
+        <div class="src-item"><div class="src-n">[2]</div><div class="src-t">National Academies of Sciences. (2010). <em>Hidden Costs of Energy: Unpriced Consequences of Energy Production and Use.</em> National Academies Press. Source for vehicle air-quality externalities ($0.007–$0.014/mile) and natural gas health costs.</div></div>
+        <div class="src-item"><div class="src-n">[3]</div><div class="src-t">Epstein, P.R., et al. (2011). Full cost accounting for the life cycle of coal. <em>Annals of the New York Academy of Sciences, 1219</em>, 73–98. Coal: ~$0.17/kWh climate + $0.08/kWh health &amp; ecosystem externalities.</div></div>
+        <div class="src-item"><div class="src-n">[4]</div><div class="src-t">FAO / UN Food Systems Summit. (2021). <em>True Cost of Food: Measuring what matters to transform our food systems.</em> Diet externality ranges by type: vegan ~$700/yr, vegetarian ~$1,150/yr, mixed ~$2,100/yr, meat-heavy ~$3,800/yr.</div></div>
+        <div class="src-item"><div class="src-n">[5]</div><div class="src-t">True Price Foundation. (2022). <em>True Price methodology for food and consumer products.</em> trueprice.org. Per-product environmental and social cost benchmarks used for diet and consumer goods categories.</div></div>
+        <div class="src-item"><div class="src-n">[6]</div><div class="src-t">IPCC. (2022). <em>Climate Change 2022: Mitigation of Climate Change.</em> Working Group III Contribution to AR6. Aviation radiative forcing multiplier of 1.9× applied to CO₂ for non-CO₂ warming effects (contrails, NOx, etc.).</div></div>
+        <div class="src-item"><div class="src-n">[7]</div><div class="src-t">NREL. (2021). <em>Life cycle greenhouse gas emissions from electricity generation: Update.</em> National Renewable Energy Laboratory. Lifecycle CO₂e (g/kWh): solar ~48, wind ~11, nuclear ~12, natural gas ~490, coal ~820.</div></div>
+        <div class="src-item"><div class="src-n">[8]</div><div class="src-t">Ellen MacArthur Foundation. (2017). <em>A new textiles economy: Redesigning fashion's future.</em> Garment externality: $0.70–$1.20/item across water, chemical pollution, and labor externalities in the supply chain.</div></div>
+        <div class="src-item"><div class="src-n">[9]</div><div class="src-t">Xu, M., et al. (2020). Electronic waste: A review of its impacts on human health. <em>Journal of Hazardous Materials, 383</em>, 121199. Production + e-waste externality: $60–$180 per consumer device.</div></div>
+        <div class="src-item"><div class="src-n">[10]</div><div class="src-t">Andrae, A.S., &amp; Edler, T. (2015). On global electricity usage of communication technology. <em>Challenges, 6</em>(1), 117–157. Streaming externality: ~36–97g CO₂/hr; applied at grid-adjusted rate using EPA SCC of $190/tonne.</div></div>
+      </div>
+    </div>
+
+  </div><!-- /out-col -->
+</div><!-- /wrap -->
+
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const DEFS = {vehicle:'ev',miles:12000,fshort:2,flong:1,transit:500,
+  diet:'mixed',waste:1,local:1,takeout:2,
+  grid:'natgas',kwh:10500,heat:'natgas',sqft:1800,
+  clothes:25,elec:1,spend:'average',stream:4};
+let s = {...DEFS};
+
+// ═══════════════════════════════════════════════
+// PARAMETERS (academically sourced)
+// ═══════════════════════════════════════════════
+const SCC = 190; // EPA 2023, $/tCO₂e
+
+// Vehicle: kg CO₂/mi → climate $; + direct $/mi for air quality (NAS 2010)
+const vR = {
+  ev:    {co2pmi:0,      air:0.001, other:0.006},
+  hybrid:{co2pmi:0.178,  air:0.007, other:0.006}, // ~50MPG
+  gas:   {co2pmi:0.355,  air:0.014, other:0.006}, // ~25MPG, 8.887 kgCO₂/gal
+  none:  {co2pmi:0,      air:0,     other:0}
+};
+// Flight tonnes CO₂e per flight, IPCC RF×1.9
+const fR = {short:0.255*500*1.9/1000, long:0.195*3500*1.9/1000};
+const transitRate = 0.005*SCC/1000 + 0.001; // ~5gCO₂/pax-mi + air quality
+
+// Diet $/yr (FAO 2021, True Price 2022)
+const dietBase = {
+  vegan: {cl:420,  w:90,  la:130, h:60 },
+  veggie:{cl:580,  w:140, la:190, h:180},
+  mixed: {cl:1050, w:320, la:490, h:240},
+  meat:  {cl:2100, w:680, la:750, h:280}
+};
+const wasteMul  = [0.75,1.0,1.35];
+const wasteStr  = ['Minimal','Average','High'];
+const localDis  = [1.0,0.88,0.74];
+const localStr  = ['Mostly imported','Some local','Mostly local'];
+const takeoutPM = 1.85; // $/meal packaging + delivery
+
+// Grid $/kWh (Epstein 2011, NREL 2021, NAS 2010)
+const gR = {
+  coal:  {cl:0.156, air:0.082, eco:0.019},
+  natgas:{cl:0.093, air:0.018, eco:0.003},
+  mixed: {cl:0.076, air:0.028, eco:0.007},
+  nuclear:{cl:0.002,air:0.001, eco:0.004},
+  wind:  {cl:0.002, air:0.001, eco:0.002},
+  solar: {cl:0.009, air:0.001, eco:0.001}
+};
+// Heating: nat gas 8 therms/100sqft, 0.5306 kgCO₂/therm
+const hR = {
+  natgas:  {co2sf:8*0.5306/100/1000, airsf:0.012/100},
+  heatpump:{co2sf:0, airsf:0}, // captured in kWh
+  electric:{co2sf:0, airsf:0},
+  minimal: {co2sf:2*0.5306/100/1000, airsf:0.002/100}
+};
+const clothExt = 0.90; // $/garment Ellen MacArthur 2017
+const elecExt  = 120;  // $/device Xu et al. 2020
+const spendMul = {minimal:0.45,average:1.0,high:1.8,'very-high':3.2};
+const spendBase= 340;
+const streamPH = 0.065/1000*SCC; // 65g CO₂/hr * SCC
+
+const US_T = 18400;
+const US_CATS = {transport:7200,food:4800,energy:4200,consumer:2200};
+const CLR = {transport:'#4a7c59',food:'#c8963e',energy:'#5b9bd5',consumer:'#a07cc5'};
+
+// ═══════════════════════════════════════════════
+// CALC
+// ═══════════════════════════════════════════════
+function calc() {
+  const gr = gR[s.grid];
+  const vr = vR[s.vehicle];
+
+  // Transport
+  let vCl = vr.co2pmi/1000*SCC*s.miles;
+  let vAir = vr.air*s.miles, vOt = vr.other*s.miles;
+  if (s.vehicle==='ev') { vCl=gr.cl*(s.miles/3.5); vAir=gr.air*(s.miles/3.5)*0.25; }
+  const vCost = vCl+vAir+vOt;
+  const fSh = s.fshort*fR.short*SCC;
+  const fLo = s.flong *fR.long *SCC;
+  const trCo = s.transit*transitRate;
+  const transport = vCost+fSh+fLo+trCo;
+
+  // Food
+  const db=dietBase[s.diet], wm=wasteMul[s.waste], ld=localDis[s.local];
+  const fCl=db.cl*wm*ld, fW=db.w*wm*ld, fLa=db.la*wm*ld, fH=db.h;
+  const fWa=(wm-1)*220, fTk=s.takeout*52*takeoutPM;
+  const food = fCl+fW+fLa+fH+fWa+fTk;
+
+  // Energy
+  const gCl=gr.cl*s.kwh, gAir=gr.air*s.kwh, gEc=gr.eco*s.kwh;
+  const hr=hR[s.heat], hCl=hr.co2sf*SCC*s.sqft, hAir=hr.airsf*s.sqft;
+  const energy = gCl+gAir+gEc+hCl+hAir;
+
+  // Consumer
+  const sm=spendMul[s.spend];
+  const cCl=s.clothes*clothExt*sm, cEl=s.elec*elecExt;
+  const cSh=spendBase*sm, cSt=s.stream*365*streamPH*(gr.cl/gR.natgas.cl);
+  const consumer = cCl+cEl+cSh+cSt;
+
+  const total=transport+food+energy+consumer;
+  return {transport,food,energy,consumer,total,
+    co2:total/SCC,
+    d:{vCost,fSh,fLo,trCo,fCl,fW,fLa,fH,fWa,fTk,gCl,gAir,gEc,hCl,hAir,cCl,cEl,cSh,cSt}};
+}
+
+// ═══════════════════════════════════════════════
+// CANVAS CHART LIBRARY (no external deps)
+// ═══════════════════════════════════════════════
+function getCanvas(id) {
+  const c = document.getElementById(id);
+  const w = c.parentElement.clientWidth || 700;
+  const h = c.parentElement.clientHeight || 300;
+  c.width = w * devicePixelRatio;
+  c.height = h * devicePixelRatio;
+  c.style.width = w+'px'; c.style.height = h+'px';
+  const ctx = c.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.clearRect(0,0,w,h);
+  return {ctx,w,h};
+}
+
+function drawBar(id, labels, values, colors) {
+  const {ctx,w,h} = getCanvas(id);
+  const pad={t:20,r:20,b:60,l:70};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  const max=Math.max(...values,1);
+  const n=labels.length, bw=Math.max(18, cw/n*0.55), gap=cw/n;
+
+  // Grid lines
+  ctx.strokeStyle='rgba(200,210,205,0.35)'; ctx.lineWidth=1;
+  for (let i=0;i<=4;i++) {
+    const y=pad.t+ch*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
+    ctx.fillStyle='#8ca89a'; ctx.font='11px system-ui';
+    ctx.textAlign='right';
+    const v=Math.round(max*i/4);
+    ctx.fillText('$'+(v>=1000?(v/1000).toFixed(0)+'k':v), pad.l-8, y+4);
+  }
+
+  // Bars
+  values.forEach((v,i) => {
+    const bh = Math.max(2, ch*(v/max));
+    const x = pad.l+i*gap+(gap-bw)/2;
+    const y = pad.t+ch-bh;
+    ctx.fillStyle = colors[i % colors.length];
+    // Rounded top
+    const r=3;
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+bw-r,y);
+    ctx.quadraticCurveTo(x+bw,y,x+bw,y+r);
+    ctx.lineTo(x+bw,y+bh); ctx.lineTo(x,y+bh); ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.fill();
+
+    // Value label on bar
+    if (v > max*0.05) {
+      ctx.fillStyle='#fff'; ctx.font='bold 10px system-ui'; ctx.textAlign='center';
+      ctx.fillText('$'+(v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)), x+bw/2, y+14);
+    }
+
+    // X label
+    ctx.fillStyle='#8ca89a'; ctx.font='10px system-ui'; ctx.textAlign='center';
+    const lparts=labels[i].split('\n');
+    lparts.forEach((lp,li)=>{
+      ctx.fillText(lp, x+bw/2, pad.t+ch+16+li*13);
+    });
+  });
+
+  // Axis
+  ctx.strokeStyle='rgba(200,210,205,0.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
+}
+
+function drawDonut(id, labels, values, colors) {
+  const {ctx,w,h} = getCanvas(id);
+  const total=values.reduce((a,b)=>a+b,0)||1;
+  const cx=w*0.38, cy=h/2, r=Math.min(cx,cy)*0.78, ri=r*0.58;
+
+  let ang=-Math.PI/2;
+  values.forEach((v,i) => {
+    const slice=2*Math.PI*(v/total);
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,ang,ang+slice);
+    ctx.closePath(); ctx.fillStyle=colors[i]; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,ri,ang,ang+slice);
+    ctx.closePath(); ctx.fillStyle='#fdfaf5'; ctx.fill();
+    ang+=slice;
+  });
+
+  // Center text
+  ctx.fillStyle='#1a3028'; ctx.font='bold 15px Georgia';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('$'+Math.round(total/1000).toLocaleString()+'k', cx, cy-8);
+  ctx.font='11px system-ui'; ctx.fillStyle='#8ca89a';
+  ctx.fillText('total/yr', cx, cy+10);
+
+  // Legend
+  const lx=w*0.72, ly=cy-labels.length*16;
+  labels.forEach((lb,i)=>{
+    const y=ly+i*32;
+    ctx.fillStyle=colors[i]; ctx.fillRect(lx,y,14,14);
+    ctx.fillStyle='#1a3028'; ctx.font='12px system-ui'; ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText(lb, lx+20, y);
+    ctx.fillStyle='#8ca89a'; ctx.font='11px system-ui';
+    const pct=Math.round(values[i]/total*100);
+    ctx.fillText('$'+Math.round(values[i]).toLocaleString()+' ('+pct+'%)', lx+20, y+14);
+  });
+}
+
+function drawCompare(id, yourVals, benchmarks) {
+  const {ctx,w,h} = getCanvas(id);
+  const pad={t:20,r:20,b:50,l:70};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  const groups=['You','US Average','Low-Impact','High-Impact'];
+  const data=[yourVals,...benchmarks];
+  const maxTotal=Math.max(...data.map(d=>d.reduce((a,b)=>a+b,0)))*1.05;
+  const n=groups.length, grpW=cw/n, bw=Math.min(60,grpW*0.6);
+  const cats=['transport','food','energy','consumer'];
+  const catClr=[CLR.transport,CLR.food,CLR.energy,CLR.consumer];
+
+  // Grid
+  ctx.strokeStyle='rgba(200,210,205,0.35)'; ctx.lineWidth=1;
+  for (let i=0;i<=4;i++) {
+    const y=pad.t+ch*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
+    ctx.fillStyle='#8ca89a'; ctx.font='11px system-ui'; ctx.textAlign='right';
+    const v=Math.round(maxTotal*i/4);
+    ctx.fillText('$'+(v>=1000?(v/1000).toFixed(0)+'k':v), pad.l-8, y+4);
+  }
+
+  // Stacked bars
+  data.forEach((vals,gi) => {
+    const x=pad.l+gi*grpW+(grpW-bw)/2;
+    let base=pad.t+ch;
+    vals.forEach((v,ci) => {
+      const bh=ch*(v/maxTotal);
+      base-=bh;
+      ctx.fillStyle=catClr[ci];
+      ctx.fillRect(x, base, bw, bh);
+    });
+    // Total label on top
+    const tot=vals.reduce((a,b)=>a+b,0);
+    ctx.fillStyle='#1a3028'; ctx.font='bold 11px system-ui'; ctx.textAlign='center';
+    ctx.fillText('$'+(tot>=1000?(tot/1000).toFixed(0)+'k':Math.round(tot)), x+bw/2, base-6);
+    // Group label
+    ctx.fillStyle='#8ca89a'; ctx.font='11px system-ui';
+    ctx.fillText(groups[gi], x+bw/2, pad.t+ch+16);
+  });
+
+  // Legend
+  const lx=pad.l, ly=pad.t-5;
+  catClr.forEach((c,i) => {
+    const x=lx+i*((cw)/4);
+    ctx.fillStyle=c; ctx.fillRect(x,ly,10,10);
+    ctx.fillStyle='#8ca89a'; ctx.font='10px system-ui'; ctx.textAlign='left';
+    ctx.fillText(cats[i].charAt(0).toUpperCase()+cats[i].slice(1),x+14,ly+9);
+  });
+
+  // Axis
+  ctx.strokeStyle='rgba(200,210,205,0.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
+}
+
+function drawSensitivity(id) {
+  const {ctx,w,h} = getCanvas(id);
+  const pad={t:30,r:20,b:60,l:70};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  const mPts=[0,5000,10000,15000,20000,30000,40000];
+  const vTypes=['gas','hybrid','ev','none'];
+  const vClrs=['#c94040','#c8963e','#4a7c59','#8ca89a'];
+  const vNames=['Gas Car','Hybrid','EV','No Car'];
+  const vDash=[null,null,null,[4,4]];
+
+  const savedV=s.vehicle, savedM=s.miles;
+  const lines=vTypes.map(vt=>{
+    s.vehicle=vt;
+    return mPts.map(m=>{s.miles=m;return calc().total;});
+  });
+  s.vehicle=savedV; s.miles=savedM;
+
+  const allVals=lines.flat();
+  const maxV=Math.max(...allVals)*1.05, minV=0;
+
+  // Grid
+  ctx.strokeStyle='rgba(200,210,205,0.35)'; ctx.lineWidth=1;
+  for (let i=0;i<=4;i++) {
+    const y=pad.t+ch*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
+    ctx.fillStyle='#8ca89a'; ctx.font='11px system-ui'; ctx.textAlign='right';
+    const v=Math.round(maxV*i/4);
+    ctx.fillText('$'+(v>=1000?(v/1000).toFixed(0)+'k':v), pad.l-8, y+4);
+  }
+
+  // Lines
+  lines.forEach((pts,li) => {
+    ctx.beginPath(); ctx.strokeStyle=vClrs[li]; ctx.lineWidth=2.5;
+    if(vDash[li]) ctx.setLineDash(vDash[li]); else ctx.setLineDash([]);
+    pts.forEach((v,pi) => {
+      const x=pad.l+pi/(mPts.length-1)*cw;
+      const y=pad.t+ch*(1-(v-minV)/(maxV-minV));
+      pi===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    // Dot at current miles
+    const curM=Math.min(savedM,40000);
+    const curIdx=mPts.findIndex(m=>m>=curM);
+    if (curIdx>0) {
+      const t=(curM-mPts[curIdx-1])/(mPts[curIdx]-mPts[curIdx-1]);
+      const curV=pts[curIdx-1]+t*(pts[curIdx]-pts[curIdx-1]);
+      const cx=pad.l+curM/40000*cw;
+      const cy=pad.t+ch*(1-(curV-minV)/(maxV-minV));
+      ctx.beginPath(); ctx.arc(cx,cy,5,0,2*Math.PI);
+      ctx.fillStyle=vClrs[li]; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx,cy,5,0,2*Math.PI);
+      ctx.strokeStyle='#fdfaf5'; ctx.lineWidth=2; ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  });
+
+  // X-axis labels
+  mPts.forEach((m,pi) => {
+    const x=pad.l+pi/(mPts.length-1)*cw;
+    ctx.fillStyle='#8ca89a'; ctx.font='10px system-ui'; ctx.textAlign='center';
+    ctx.fillText(m>=1000?(m/1000)+'k mi':m+' mi', x, pad.t+ch+16);
+  });
+
+  // Legend
+  const lx=pad.l, ly=8;
+  vNames.forEach((nm,i)=>{
+    const x=lx+i*((cw+pad.l)/4);
+    ctx.strokeStyle=vClrs[i]; ctx.lineWidth=2.5;
+    if(vDash[i]) ctx.setLineDash(vDash[i]); else ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(x,ly+5); ctx.lineTo(x+22,ly+5); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#4a6055'; ctx.font='11px system-ui'; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText(nm,x+26,ly+5);
+  });
+
+  // Axis
+  ctx.strokeStyle='rgba(200,210,205,0.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
+
+  // Title
+  ctx.fillStyle='#1a3028'; ctx.font='11px system-ui'; ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.fillText('Total Annual Externalities by Vehicle Type & Mileage (all other inputs held constant)', w/2, 2);
+}
+
+// Chart state
+let activeTab='bar';
+
+function renderCharts(r) {
+  const barColors=['#4a7c59','#7aab8a','#a8cdb5','#c8963e','#e8b86d','#f5d49a','#5b9bd5','#8ec1ea','#a07cc5','#c5a8e8','#c8a0d4','#e0c8f0'];
+  const d=r.d;
+
+  if (activeTab==='bar') {
+    drawBar('ch-bar',
+      ['Vehicle','Flights','Transit','Diet\n(all)','Food\nWaste','Takeout','Grid\nElec','Heating','Clothing','Electronics','Shopping','Streaming'],
+      [d.vCost,d.fSh+d.fLo,d.trCo,d.fCl+d.fW+d.fLa+d.fH,d.fWa,d.fTk,d.gCl+d.gAir+d.gEc,d.hCl+d.hAir,d.cCl,d.cEl,d.cSh,d.cSt].map(v=>Math.max(0,v)),
+      barColors
+    );
+  } else if (activeTab==='donut') {
+    drawDonut('ch-donut',
+      ['Transportation','Food','Energy','Consumer'],
+      [r.transport,r.food,r.energy,r.consumer],
+      Object.values(CLR)
+    );
+  } else if (activeTab==='compare') {
+    drawCompare('ch-compare',
+      [r.transport,r.food,r.energy,r.consumer],
+      [[US_CATS.transport,US_CATS.food,US_CATS.energy,US_CATS.consumer],
+       [1200,900,500,300],[15000,7500,9000,6000]]
+    );
+  } else if (activeTab==='sens') {
+    drawSensitivity('ch-sens');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// UPDATE
+// ═══════════════════════════════════════════════
+function go() {
+  const r=calc(); const d=r.d;
+
+  // Total
+  const tn=document.getElementById('t-num');
+  tn.classList.remove('pop'); void tn.offsetWidth;
+  tn.textContent='$'+Math.round(r.total).toLocaleString();
+  tn.classList.add('pop');
+
+  const pct=(r.total-US_T)/US_T*100;
+  const pa=document.getElementById('p-avg');
+  pa.textContent='vs. US avg: '+(pct>=0?'+':'')+Math.round(pct)+'%';
+  pa.className='pill '+(pct>15?'bad':pct<-15?'good':'warn');
+
+  document.getElementById('p-co2').textContent='CO₂e: ~'+Math.round(r.co2)+' t/yr';
+
+  const grade=r.total<6000?'🌟 Excellent — Top 10%'
+    :r.total<11000?'✅ Well Below Average'
+    :r.total<16000?'🟡 Below US Average'
+    :r.total<21000?'🔶 Near US Average'
+    :r.total<32000?'🔴 Above Average'
+    :'❗ Very High Impact';
+  const pg=document.getElementById('p-grade');
+  pg.textContent=grade;
+  pg.className='pill '+(r.total<11000?'good':r.total>21000?'bad':'warn');
+
+  // Cards
+  const vals=[r.transport,r.food,r.energy,r.consumer];
+  const catK=['transport','food','energy','consumer'];
+  const maxV=Math.max(...vals,1);
+  catK.forEach((k,i)=>{
+    document.getElementById('cv-'+k).textContent='$'+Math.round(vals[i]).toLocaleString();
+    document.getElementById('cb-'+k).style.width=Math.min(100,vals[i]/maxV*100)+'%';
+    document.getElementById('cp-'+k).textContent=Math.round(vals[i]/r.total*100)+'% of total';
+  });
+
+  // Insight
+  const bigI=vals.indexOf(Math.max(...vals));
+  const bigLbl=['transportation','food choices','home energy use','consumer goods'][bigI];
+  const bigPct=Math.round(Math.max(...vals)/r.total*100);
+  let ins=`Your largest externality is <strong>${bigLbl}</strong> (${bigPct}% of your total).`;
+  if(bigI===0&&s.vehicle==='gas') ins+=' Switching to an EV on a clean grid could cut vehicle emissions by ~75%.';
+  else if(bigI===0&&s.flong>3) ins+=' Long-haul flights are significant — each transoceanic round-trip can equal 2–3 tonnes CO₂e.';
+  else if(bigI===1&&s.diet==='meat') ins+=' A shift toward a plant-rich diet could reduce your food externalities by up to 60%.';
+  else if(bigI===2&&(s.grid==='coal'||s.grid==='natgas')) ins+=' Switching to a renewable provider or rooftop solar could cut this category dramatically.';
+  else ins+=' Explore each slider to see which changes have the largest impact on your total.';
+  document.getElementById('insight-text').innerHTML=ins;
+  document.getElementById('insight-box').classList.add('show');
+
+  // Breakdown table
+  const rows=[
+    {ico:'🚗',name:'Vehicle Driving',  cat:'transport',desc:`${s.miles.toLocaleString()} mi/yr · ${s.vehicle==='none'?'No car':s.vehicle.toUpperCase()}`,val:d.vCost},
+    {ico:'✈️',name:'Flights (short)',  cat:'transport',desc:`${s.fshort} flights/yr · ~500 mi · RF×1.9`,val:d.fSh},
+    {ico:'✈️',name:'Flights (long)',   cat:'transport',desc:`${s.flong} flights/yr · ~3,500 mi · RF×1.9`,val:d.fLo},
+    {ico:'🚌',name:'Public Transit',   cat:'transport',desc:`${s.transit.toLocaleString()} mi/yr`,val:d.trCo},
+    {ico:'🌱',name:'Diet (all costs)', cat:'food',desc:`${s.diet} · ${wasteStr[s.waste].toLowerCase()} waste · ${localStr[s.local].toLowerCase()}`,val:d.fCl+d.fW+d.fLa+d.fH},
+    {ico:'🗑️',name:'Food Waste',      cat:'food',desc:`Waste mult ×${wasteMul[s.waste]} above baseline`,val:d.fWa},
+    {ico:'🛵',name:'Takeout & Delivery',cat:'food',desc:`${s.takeout} meals/wk · packaging + delivery`,val:d.fTk},
+    {ico:'⚡',name:'Grid Electricity', cat:'energy',desc:`${s.kwh.toLocaleString()} kWh/yr · ${s.grid} grid`,val:d.gCl+d.gAir+d.gEc},
+    {ico:'🔥',name:'Home Heating',     cat:'energy',desc:`${s.heat} · ${s.sqft.toLocaleString()} sq ft`,val:d.hCl+d.hAir},
+    {ico:'👕',name:'Clothing',         cat:'consumer',desc:`${s.clothes} items/yr · $${clothExt}/item`,val:d.cCl},
+    {ico:'💻',name:'Electronics',      cat:'consumer',desc:`${s.elec} devices/yr · ~$${elecExt}/device`,val:d.cEl},
+    {ico:'🛒',name:'General Shopping', cat:'consumer',desc:`${s.spend} spending level`,val:d.cSh},
+    {ico:'📺',name:'Streaming',        cat:'consumer',desc:`${s.stream} hrs/day · 65g CO₂/hr grid-adjusted`,val:d.cSt}
+  ];
+  const maxRow=Math.max(...rows.map(rw=>rw.val),1);
+  document.getElementById('bk-body').innerHTML=rows.map(rw=>{
+    const pct=Math.min(100,rw.val/maxRow*100);
+    const cls=rw.val>2500?'hi':rw.val<200?'lo':'';
+    return `<tr>
+      <td><div class="td-cat">${rw.ico} ${rw.name}</div></td>
+      <td class="td-desc">${rw.desc}</td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:${pct}%;background:${CLR[rw.cat]}"></div></div></td>
+      <td class="td-cost ${cls}">$${Math.round(rw.val).toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+
+  renderCharts(r);
+  updateHarmSection(r);
+}
+
+// ═══════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════
+const disp={
+  miles:v=>Number(v).toLocaleString()+' mi',
+  fshort:v=>v,flong:v=>v,transit:v=>Number(v).toLocaleString()+' mi',
+  waste:v=>wasteStr[v],local:v=>localStr[v],takeout:v=>v,
+  kwh:v=>Number(v).toLocaleString()+' kWh',sqft:v=>Number(v).toLocaleString()+' sq ft',
+  clothes:v=>v,elec:v=>v,stream:v=>v+' hrs/day'
+};
+function slVal(k,v){ s[k]=Number(v); const el=document.getElementById('dv-'+k); if(el&&disp[k])el.textContent=disp[k](v); }
+function setSeg(k,v,btn){ s[k]=v; document.getElementById('sg-'+k).querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); go(); }
+
+function switchTab(name,btn){
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.cview').forEach(v=>v.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('cv-'+name).classList.add('on');
+  activeTab=name;
+  go();
+}
+
+function resetAll(){
+  s={...DEFS};
+  Object.entries({miles:12000,fshort:2,flong:1,transit:500,waste:1,local:1,takeout:2,kwh:10500,sqft:1800,clothes:25,elec:1,stream:4}).forEach(([k,v])=>{
+    const el=document.getElementById('sl-'+k); if(el){el.value=v;slVal(k,v);}
+  });
+  [{k:'vehicle',v:'ev'},{k:'diet',v:'mixed'},{k:'heat',v:'natgas'},{k:'spend',v:'average'}].forEach(({k,v})=>{
+    const grp=document.getElementById('sg-'+k);
+    if(grp){grp.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('on'));
+    const btn=[...grp.querySelectorAll('.seg-btn')].find(b=>b.onclick&&b.getAttribute('onclick').includes("'"+v+"'"));
+    if(btn)btn.classList.add('on');}
+  });
+  document.getElementById('sel-grid').value=DEFS.grid;
+  go();
+}
+
+window.addEventListener('resize',()=>go());
+document.addEventListener('DOMContentLoaded',()=>go());
+
+// ═══════════════════════════════════════════════
+// HARM-TYPE BREAKDOWN
+// ═══════════════════════════════════════════════
+// Harm type proportions grounded in academic literature.
+// Each externality dollar is decomposed into harm categories.
+// Sources: NAS (2010), Epstein (2011), FAO (2021), True Price (2022),
+//          EPA SCC methodology, IPCC AR6 (2022), Ellen MacArthur (2017)
+
+// Harm category definitions with colors and descriptions
+const HARM_DEFS = {
+  climate: {
+    icon:'🌡️', name:'Climate Change Damage',
+    color:'#c94040',
+    desc:'Costs of rising temperatures, extreme weather events, sea-level rise, and ecosystem disruption. Valued using the EPA Social Cost of Carbon ($190/tCO₂e).',
+    sources:'[1] EPA SCC 2023; [6] IPCC AR6 2022'
+  },
+  health: {
+    icon:'🫁', name:'Human Health Costs',
+    color:'#e07b39',
+    desc:'Premature mortality, respiratory illness, cardiovascular disease, and lost productivity from air pollutants (PM2.5, NOₓ, SOₓ, ozone). Largest single cost category for fossil fuels.',
+    sources:'[2] NAS 2010; [3] Epstein et al. 2011'
+  },
+  ecosystem: {
+    icon:'🌊', name:'Ecosystem & Biodiversity Loss',
+    color:'#4a7c59',
+    desc:'Damage to forests, wetlands, fisheries, and biodiversity from pollution, land-use change, and water extraction. Includes deforestation costs and aquatic ecosystem degradation.',
+    sources:'[3] Epstein 2011; [4] FAO 2021; [5] True Price 2022'
+  },
+  water: {
+    icon:'💧', name:'Water Depletion & Pollution',
+    color:'#5b9bd5',
+    desc:'Groundwater depletion, surface water contamination, and water quality degradation. Especially significant in food production — beef requires ~1,800 gallons per pound.',
+    sources:'[4] FAO True Cost 2021; [5] True Price 2022'
+  },
+  land: {
+    icon:'🌾', name:'Land Use & Soil Degradation',
+    color:'#8fba6e',
+    desc:'Costs of converting natural habitat to agricultural or industrial use, soil erosion, desertification, and loss of carbon stored in soils and vegetation.',
+    sources:'[4] FAO 2021; [5] True Price 2022'
+  },
+  social: {
+    icon:'👷', name:'Labor & Social Costs',
+    color:'#a07cc5',
+    desc:'Supply-chain labor exploitation, occupational health risks, community displacement, and "sacrifice zone" costs borne by communities near extraction and production sites.',
+    sources:'[5] True Price 2022; [8] Ellen MacArthur 2017; [9] Xu 2020'
+  },
+  waste: {
+    icon:'♻️', name:'Waste & Pollution Costs',
+    color:'#7aab8a',
+    desc:'End-of-life disposal, landfill leachate, e-waste toxicity, plastic pollution, and chemical contamination from manufacturing and packaging.',
+    sources:'[8] Ellen MacArthur 2017; [9] Xu 2020'
+  },
+  congestion: {
+    icon:'🚦', name:'Congestion & Accident Costs',
+    color:'#c8963e',
+    desc:'Road congestion imposes time costs on other drivers (~$87B/yr in US). Traffic accidents impose medical, legal, and productivity costs beyond what insurance covers.',
+    sources:'[2] NAS 2010; Texas Transportation Institute 2023'
+  }
+};
+
+// ── HARM PROPORTIONS by activity type (shares summing to 1.0)
+// These proportions come directly from the source decompositions.
+// NAS (2010) Table ES-1 decomposes vehicle externalities by type.
+// Epstein (2011) Table 2 decomposes coal lifecycle costs by category.
+// FAO (2021) decomposes food system costs into health, climate, nature, social.
+
+const harmProportions = {
+  // Vehicle driving (NAS 2010 Table ES-1 + EPA SCC):
+  // Health (air quality) ~40%, Climate ~35%, Congestion/accident ~25%
+  vCost:   {climate:0.35, health:0.40, congestion:0.25},
+
+  // Flights: almost entirely climate (RF×1.9) + minor health from airport pollution
+  fSh:     {climate:0.88, health:0.07, social:0.05},
+  fLo:     {climate:0.88, health:0.07, social:0.05},
+  trCo:    {climate:0.55, health:0.30, congestion:0.15},
+
+  // Food system (FAO 2021 — health 27%, climate 29%, water/land/nature 35%, social 9%)
+  fCl:     {climate:1.0},                                      // pure climate cost
+  fW:      {water:1.0},                                        // pure water cost
+  fLa:     {land:0.70, ecosystem:0.30},                        // land + ecosystem
+  fH:      {health:1.0},                                       // pure health cost
+  fWa:     {climate:0.40, ecosystem:0.30, water:0.20, land:0.10}, // waste mixed
+  fTk:     {climate:0.35, waste:0.40, social:0.15, ecosystem:0.10},
+
+  // Grid electricity (Epstein 2011 for coal; NREL for others)
+  // Coal: Health 49%, Climate 39%, Ecosystem 12%  (Epstein Table 2)
+  // Nat Gas: Climate 74%, Health 19%, Eco 7%  (NAS 2010)
+  gCl:     {climate:1.0},
+  gAir:    {health:1.0},
+  gEc:     {ecosystem:0.60, water:0.40},
+
+  // Heating — similar to nat gas grid
+  hCl:     {climate:1.0},
+  hAir:    {health:1.0},
+
+  // Consumer goods
+  cCl:     {social:0.50, waste:0.30, water:0.12, ecosystem:0.08}, // clothing
+  cEl:     {waste:0.45, social:0.30, climate:0.15, ecosystem:0.10}, // electronics
+  cSh:     {climate:0.30, social:0.25, waste:0.25, ecosystem:0.20}, // general
+  cSt:     {climate:0.80, waste:0.12, social:0.08}  // streaming — mostly climate
+};
+
+function calcHarm(r) {
+  const d = r.d;
+  const totals = {};
+
+  Object.entries(harmProportions).forEach(([key, shares]) => {
+    const val = d[key] || 0;
+    Object.entries(shares).forEach(([harm, share]) => {
+      totals[harm] = (totals[harm] || 0) + val * share;
+    });
+  });
+
+  return totals;
+}
+
+let activeHarmTab = 'cards';
+
+function renderHarmCards(r) {
+  const harmTotals = calcHarm(r);
+  const grandTotal = r.total;
+
+  // Sort by value desc
+  const sorted = Object.entries(harmTotals)
+    .filter(([,v]) => v > 5)
+    .sort((a,b) => b[1]-a[1]);
+
+  const grid = document.getElementById('harm-grid');
+  grid.innerHTML = sorted.map(([key, val]) => {
+    const def = HARM_DEFS[key];
+    if (!def) return '';
+    const pct = Math.round(val / grandTotal * 100);
+    const barPct = Math.min(100, val / sorted[0][1] * 100);
+    return `<div class="harm-card">
+      <div class="harm-card-accent" style="background:${def.color}"></div>
+      <span class="harm-icon">${def.icon}</span>
+      <div class="harm-name">${def.name}</div>
+      <div class="harm-val">$${Math.round(val).toLocaleString()}</div>
+      <div class="harm-pct" style="color:${def.color}">${pct}% of total</div>
+      <div class="harm-desc">${def.desc}</div>
+      <div class="harm-bar-track">
+        <div class="harm-bar-fill" style="width:${barPct}%;background:${def.color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function drawWaterfall(r) {
+  const {ctx,w,h} = getCanvas('ch-waterfall');
+  const harmTotals = calcHarm(r);
+  const sorted = Object.entries(harmTotals)
+    .filter(([,v])=>v>5)
+    .sort((a,b)=>b[1]-a[1]);
+
+  const pad={t:24,r:24,b:56,l:72};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  const total = sorted.reduce((a,[,v])=>a+v,0);
+  const maxVal = sorted[0][1]*1.08;
+
+  // Grid
+  ctx.strokeStyle='rgba(200,210,205,0.3)'; ctx.lineWidth=1;
+  for (let i=0;i<=4;i++) {
+    const y=pad.t+ch*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
+    ctx.fillStyle='#8ca89a'; ctx.font='11px system-ui'; ctx.textAlign='right';
+    const v=Math.round(maxVal*i/4);
+    ctx.fillText('$'+(v>=1000?(v/1000).toFixed(1)+'k':v), pad.l-6, y+4);
+  }
+
+  const n=sorted.length;
+  const bw=Math.min(52, cw/n*0.6), gap=cw/n;
+
+  sorted.forEach(([key,val],i) => {
+    const def = HARM_DEFS[key];
+    if (!def) return;
+    const bh = ch*(val/maxVal);
+    const x = pad.l+i*gap+(gap-bw)/2;
+    const y = pad.t+ch-bh;
+
+    // Bar with rounded top
+    ctx.fillStyle=def.color;
+    const rr=3;
+    ctx.beginPath();
+    ctx.moveTo(x+rr,y); ctx.lineTo(x+bw-rr,y);
+    ctx.quadraticCurveTo(x+bw,y,x+bw,y+rr);
+    ctx.lineTo(x+bw,y+bh); ctx.lineTo(x,y+bh); ctx.lineTo(x,y+rr);
+    ctx.quadraticCurveTo(x,y,x+rr,y);
+    ctx.fill();
+
+    // Dollar label inside bar if tall enough
+    if (bh > 24) {
+      ctx.fillStyle='rgba(255,255,255,0.92)'; ctx.font='bold 10px system-ui'; ctx.textAlign='center';
+      ctx.fillText('$'+(val>=1000?(val/1000).toFixed(1)+'k':Math.round(val)), x+bw/2, y+14);
+    }
+
+    // % label above bar
+    const pct = Math.round(val/total*100);
+    ctx.fillStyle=def.color; ctx.font='bold 10px system-ui'; ctx.textAlign='center';
+    ctx.fillText(pct+'%', x+bw/2, y-5);
+
+    // Icon + label below
+    ctx.font='14px system-ui'; ctx.fillText(def.icon, x+bw/2, pad.t+ch+18);
+    ctx.fillStyle='#8ca89a'; ctx.font='9px system-ui';
+    // Wrap label
+    const words=def.name.split(' ');
+    let line='', line2='';
+    words.forEach(w=>{
+      if (line.length+w.length<9) line+=(line?' ':'')+w;
+      else line2+=(line2?' ':'')+w;
+    });
+    ctx.fillText(line, x+bw/2, pad.t+ch+30);
+    if(line2) ctx.fillText(line2, x+bw/2, pad.t+ch+41);
+  });
+
+  // Axis
+  ctx.strokeStyle='rgba(200,210,205,0.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
+
+  // Legend
+  const leg = document.getElementById('wf-legend');
+  leg.innerHTML = sorted.map(([key,val])=>{
+    const def=HARM_DEFS[key]; if(!def)return'';
+    return `<div class="wf-leg-item">
+      <div class="wf-leg-dot" style="background:${def.color}"></div>
+      <span>${def.name}: <strong style="color:var(--forest)">$${Math.round(val).toLocaleString()}</strong></span>
+    </div>`;
+  }).join('');
+}
+
+function drawHarmCompare(r) {
+  const {ctx,w,h} = getCanvas('ch-harm-compare');
+  const harmTotals = calcHarm(r);
+
+  // Sector harm breakdown from literature (proportions)
+  // NAS (2010) vehicle: Health 40%, Climate 35%, Other 25%
+  // Epstein (2011) coal: Health 49%, Climate 39%, Eco 12%
+  // FAO (2021) food: Health 27%, Climate 29%, Nature 35%, Social 9%
+  // True Price (2022) consumer: Social 40%, Waste 30%, Climate 20%, Eco 10%
+
+  const sectors = [
+    { name:'Transportation', yourVal: r.transport,
+      literature:[ {h:'Climate',c:'#c94040',pct:35},{h:'Health',c:'#e07b39',pct:40},{h:'Congestion',c:'#c8963e',pct:25} ],
+      ref:'NAS 2010' },
+    { name:'Food', yourVal: r.food,
+      literature:[ {h:'Climate',c:'#c94040',pct:29},{h:'Health',c:'#e07b39',pct:27},{h:'Ecosystem\n& Water',c:'#4a7c59',pct:35},{h:'Social',c:'#a07cc5',pct:9} ],
+      ref:'FAO 2021' },
+    { name:'Energy', yourVal: r.energy,
+      literature:[ {h:'Climate',c:'#c94040',pct:39},{h:'Health',c:'#e07b39',pct:49},{h:'Ecosystem',c:'#4a7c59',pct:12} ],
+      ref:'Epstein 2011 (coal); NAS 2010' },
+    { name:'Consumer', yourVal: r.consumer,
+      literature:[ {h:'Social',c:'#a07cc5',pct:40},{h:'Waste',c:'#7aab8a',pct:30},{h:'Climate',c:'#c94040',pct:20},{h:'Ecosystem',c:'#4a7c59',pct:10} ],
+      ref:'True Price 2022; Ellen MacArthur 2017' }
+  ];
+
+  const pad={t:20,r:24,b:40,l:90};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  const nSectors=sectors.length;
+  const rowH=ch/nSectors;
+  const maxVal=Math.max(...sectors.map(s=>s.yourVal))*1.1;
+
+  // Draw each sector row as stacked horizontal bar
+  sectors.forEach((sec,si) => {
+    const y=pad.t+si*rowH;
+    const bh=Math.min(28, rowH*0.55);
+    const by=y+(rowH-bh)/2;
+
+    // Label
+    ctx.fillStyle='#1a3028'; ctx.font='bold 11px system-ui'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText(sec.name, pad.l-10, by+bh/2);
+
+    // Stacked segments
+    const barW=cw*(sec.yourVal/maxVal);
+    let xOff=pad.l;
+    sec.literature.forEach(seg => {
+      const segW=barW*(seg.pct/100);
+      ctx.fillStyle=seg.c;
+      ctx.fillRect(xOff, by, segW, bh);
+
+      // Label inside if wide enough
+      if(segW>30) {
+        ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.font='9px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(seg.pct+'%', xOff+segW/2, by+bh/2);
+      }
+      xOff+=segW;
+    });
+
+    // Dollar total
+    ctx.fillStyle='#1a3028'; ctx.font='11px system-ui'; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('$'+Math.round(sec.yourVal).toLocaleString(), pad.l+barW+8, by+bh/2);
+
+    // Source ref
+    ctx.fillStyle='#8ca89a'; ctx.font='9px system-ui'; ctx.textAlign='right';
+    ctx.fillText(sec.ref, w-pad.r, by+bh+8);
+  });
+
+  // Harm type legend (collect unique)
+  const seen={};
+  const legendItems=[];
+  sectors.forEach(s=>s.literature.forEach(seg=>{
+    if(!seen[seg.h]){seen[seg.h]=seg.c; legendItems.push({h:seg.h,c:seg.c});}
+  }));
+
+  const legY=pad.t+ch+12;
+  let legX=pad.l;
+  ctx.textBaseline='top';
+  legendItems.forEach(li=>{
+    ctx.fillStyle=li.c; ctx.fillRect(legX,legY,10,10);
+    ctx.fillStyle='#5a7a6a'; ctx.font='10px system-ui'; ctx.textAlign='left';
+    ctx.fillText(li.h.replace('\n',' '), legX+13, legY+1);
+    legX+=ctx.measureText(li.h.replace('\n',' ')).width+32;
+    if(legX>w-100){legX=pad.l;} // wrap (shouldn't be needed)
+  });
+
+  // Axis
+  ctx.strokeStyle='rgba(200,210,205,0.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.stroke();
+}
+
+function updateHarmSection(r) {
+  if (activeHarmTab==='cards')     renderHarmCards(r);
+  else if (activeHarmTab==='waterfall') drawWaterfall(r);
+  else if (activeHarmTab==='compare')  drawHarmCompare(r);
+}
+
+function switchHarm(name, btn) {
+  document.querySelectorAll('.htab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.hview').forEach(v=>v.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('hv-'+name).classList.add('on');
+  activeHarmTab=name;
+  updateHarmSection(calc());
+}
+</script>
+</body>
+</html>
