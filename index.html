@@ -168,6 +168,17 @@ canvas{display:block}
 .src-chip{font-family:'Courier New',monospace;font-size:.62rem;padding:.2rem .55rem;background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.22);color:var(--gold);border-radius:3px}
 @media(max-width:900px){.harm-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:500px){.harm-grid{grid-template-columns:1fr}}
+
+/* SENSITIVITY ANALYSIS */
+.rng-card{background:var(--cream);border:1px solid var(--cream-dk);border-radius:5px;padding:.9rem 1.1rem;position:relative;overflow:hidden}
+.rng-card-accent{position:absolute;top:0;left:0;bottom:0;width:3px}
+.rng-card-title{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);margin-bottom:.35rem}
+.rng-card-vals{display:flex;align-items:baseline;gap:.45rem;flex-wrap:wrap;margin-bottom:.35rem}
+.rng-lo{font-family:system-ui,sans-serif;font-size:.82rem;color:var(--sage)}
+.rng-mid{font-family:system-ui,sans-serif;font-size:1.05rem;font-weight:700;color:var(--forest)}
+.rng-hi{font-family:system-ui,sans-serif;font-size:.82rem;color:var(--red)}
+.rng-arrow{font-size:.7rem;color:var(--mist)}
+.rng-src{font-family:system-ui,sans-serif;font-size:.67rem;color:var(--mist);font-style:italic;line-height:1.45}
 </style>
 </head>
 <body>
@@ -397,11 +408,27 @@ canvas{display:block}
           <button class="ctab" onclick="switchTab('donut',this)">Composition</button>
           <button class="ctab" onclick="switchTab('compare',this)">vs. Benchmarks</button>
           <button class="ctab" onclick="switchTab('sens',this)">Vehicle Sensitivity</button>
+          <button class="ctab" onclick="switchTab('range',this)">Sensitivity Analysis</button>
         </div>
         <div class="cview on" id="cv-bar"><div class="chart-wrap"><canvas id="ch-bar"></canvas></div></div>
         <div class="cview" id="cv-donut"><div class="chart-wrap"><canvas id="ch-donut"></canvas></div></div>
         <div class="cview" id="cv-compare"><div class="chart-wrap"><canvas id="ch-compare"></canvas></div></div>
         <div class="cview" id="cv-sens"><div class="chart-wrap"><canvas id="ch-sens"></canvas></div></div>
+        <div class="cview" id="cv-range">
+          <p style="font-family:system-ui,sans-serif;font-size:.78rem;color:#5a7a6a;margin-bottom:1rem;line-height:1.6;font-weight:300">
+            Each bar shows the <strong style="color:var(--forest)">low, central, and high</strong> externality estimates for your current inputs, drawn from different published sources and parameter assumptions (e.g. low/central/high Social Cost of Carbon, different MPG assumptions, alternative diet studies). The central bar is what the calculator uses.
+          </p>
+          <div style="position:relative;height:340px"><canvas id="ch-range"></canvas></div>
+          <div id="range-detail" style="margin-top:1.25rem;display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem"></div>
+          <div style="font-family:system-ui,sans-serif;font-size:.71rem;color:var(--mist);font-style:italic;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--cream-dk);line-height:1.6">
+            <strong style="color:var(--gold);font-style:normal">Parameter ranges: </strong>
+            SCC: $51 (EPA 2017 low) / $190 (EPA 2023 central) / $312 (Rennert et al. 2022 high) &nbsp;·&nbsp;
+            MPG assumptions: best-in-class / average / older fleet &nbsp;·&nbsp;
+            Diet: True Price low / FAO central / Pirog & Benjamin high &nbsp;·&nbsp;
+            Grid: NREL low / NAS central / Epstein high &nbsp;·&nbsp;
+            Consumer: BEA low / True Price central / Trucost high
+          </div>
+        </div>
       </div>
     </div>
 
@@ -765,7 +792,7 @@ function drawCompare(id, yourVals, benchmarks) {
 
 function drawSensitivity(id) {
   const {ctx,w,h} = getCanvas(id);
-  const pad={t:30,r:20,b:60,l:70};
+  const pad={t:16,r:20,b:72,l:70};
   const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
   const mPts=[0,5000,10000,15000,20000,30000,40000];
   const vTypes=['gas','hybrid','ev','none'];
@@ -826,25 +853,22 @@ function drawSensitivity(id) {
     ctx.fillText(m>=1000?(m/1000)+'k mi':m+' mi', x, pad.t+ch+16);
   });
 
-  // Legend
-  const lx=pad.l, ly=8;
+  // Legend — placed below x-axis labels, clear of chart area
+  const legItemW = (cw) / vNames.length;
   vNames.forEach((nm,i)=>{
-    const x=lx+i*((cw+pad.l)/4);
+    const x = pad.l + i * legItemW;
+    const ly = pad.t + ch + 38;
     ctx.strokeStyle=vClrs[i]; ctx.lineWidth=2.5;
     if(vDash[i]) ctx.setLineDash(vDash[i]); else ctx.setLineDash([]);
-    ctx.beginPath(); ctx.moveTo(x,ly+5); ctx.lineTo(x+22,ly+5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x,ly); ctx.lineTo(x+20,ly); ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle='#4a6055'; ctx.font='11px system-ui'; ctx.textAlign='left'; ctx.textBaseline='middle';
-    ctx.fillText(nm,x+26,ly+5);
+    ctx.fillText(nm, x+24, ly);
   });
 
   // Axis
   ctx.strokeStyle='rgba(200,210,205,0.5)'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
-
-  // Title
-  ctx.fillStyle='#1a3028'; ctx.font='11px system-ui'; ctx.textAlign='center'; ctx.textBaseline='top';
-  ctx.fillText('Total Annual Externalities by Vehicle Type & Mileage (all other inputs held constant)', w/2, 2);
 }
 
 // Chart state
@@ -874,6 +898,8 @@ function renderCharts(r) {
     );
   } else if (activeTab==='sens') {
     drawSensitivity('ch-sens');
+  } else if (activeTab==='range') {
+    drawSensitivityRange();
   }
 }
 
@@ -996,6 +1022,270 @@ function resetAll(){
   });
   document.getElementById('sel-grid').value=DEFS.grid;
   go();
+}
+
+// ═══════════════════════════════════════════════
+// SENSITIVITY ANALYSIS
+// Parameter ranges from published literature:
+// SCC: $51 (Obama/Trump rollback, EPA 2017) / $190 (EPA 2023 central) / $312 (Rennert et al., Nature 2022)
+// Vehicle MPG: best-in-class / EPA avg / older fleet avg
+// Diet: True Price low / FAO central / Pirog & Benjamin high estimates
+// Grid rates: NREL lower bound / NAS central / Epstein upper bound
+// Consumer: BEA lower / True Price central / Trucost higher
+// ═══════════════════════════════════════════════
+
+function calcRange() {
+  // Three SCC scenarios
+  const SCC_LO  = 51;   // EPA 2017 (7% discount rate)
+  const SCC_MID = 190;  // EPA 2023 (2.5% discount rate) — used in central calc
+  const SCC_HI  = 312;  // Rennert et al. 2022, Nature (comprehensive damages)
+
+  const gr = gR[s.grid];
+
+  // ── TRANSPORT ranges ──
+  // Vehicle: vary SCC and MPG assumptions
+  // Gas: 20 MPG (older fleet) / 25 MPG (avg) / 32 MPG (best-in-class)
+  const gasMPG = {lo:32, mid:25, hi:20}; // higher MPG = lower externality → lo externality at best MPG
+  function gasCost(mpg, scc) {
+    const co2pmi = 8.887/mpg; // kg CO2/mi
+    return (co2pmi/1000*scc + vR.gas.air + vR.gas.other) * s.miles;
+  }
+  function hybridCost(scc) {
+    return (vR.hybrid.co2pmi/1000*scc + vR.hybrid.air + vR.hybrid.other) * s.miles;
+  }
+  function evCost(scc) {
+    const gridScaled = { cl: gr.cl * (scc/SCC_MID), air: gr.air, eco: gr.eco };
+    return (gridScaled.cl*(s.miles/3.5)) + (gr.air*(s.miles/3.5)*0.25) + vR.ev.other*s.miles;
+  }
+
+  let vLo, vMid, vHi;
+  if (s.vehicle==='gas') {
+    vLo  = gasCost(gasMPG.lo,  SCC_LO);
+    vMid = gasCost(gasMPG.mid, SCC_MID);
+    vHi  = gasCost(gasMPG.hi,  SCC_HI);
+  } else if (s.vehicle==='hybrid') {
+    vLo  = hybridCost(SCC_LO);
+    vMid = hybridCost(SCC_MID);
+    vHi  = hybridCost(SCC_HI);
+  } else if (s.vehicle==='ev') {
+    vLo  = evCost(SCC_LO);
+    vMid = evCost(SCC_MID);
+    vHi  = evCost(SCC_HI);
+  } else {
+    vLo=vMid=vHi=0;
+  }
+
+  // Flights: vary SCC + RF multiplier (IPCC low 1.3 / central 1.9 / high 2.7, Lee et al. 2021)
+  const RF = {lo:1.3, mid:1.9, hi:2.7};
+  function flightCost(rf, scc) {
+    const sh = s.fshort * 0.255*500*rf/1000 * scc;
+    const lo = s.flong  * 0.195*3500*rf/1000 * scc;
+    return sh + lo;
+  }
+  const fLo  = flightCost(RF.lo,  SCC_LO);
+  const fMid = flightCost(RF.mid, SCC_MID);
+  const fHi  = flightCost(RF.hi,  SCC_HI);
+
+  const transportLo  = vLo  + fLo  + s.transit*transitRate;
+  const transportMid = vMid + fMid + s.transit*transitRate;
+  const transportHi  = vHi  + fHi  + s.transit*transitRate;
+
+  // ── FOOD ranges ──
+  // Diet: True Price lower estimates / FAO central / Pirog & Benjamin (2001) + updated NAS upper
+  // Scale factors relative to central: lo=0.62, mid=1.0, hi=1.55
+  // (Published range across major studies; see Poore & Nemecek 2018 vs FAO 2021 vs older USDA estimates)
+  const dietScale = {lo:0.62, mid:1.0, hi:1.55};
+  const db = dietBase[s.diet];
+  const wm = wasteMul[s.waste], ld = localDis[s.local];
+  const baseDiet = (db.cl+db.w+db.la+db.h)*wm*ld + (wm-1)*220 + s.takeout*52*takeoutPM;
+  const foodLo  = baseDiet * dietScale.lo;
+  const foodMid = baseDiet * dietScale.mid;
+  const foodHi  = baseDiet * dietScale.hi;
+
+  // ── ENERGY ranges ──
+  // Grid: vary lifecycle CO2e rates (NREL lower / NAS central / Epstein upper) + SCC
+  // Scale climate component by SCC, keep air/eco rates as central (less variance)
+  const gridScales = {lo: SCC_LO/SCC_MID, mid:1.0, hi: SCC_HI/SCC_MID};
+  // Also vary air quality: NAS gives ranges ±40% across studies
+  const airScales  = {lo:0.6, mid:1.0, hi:1.4};
+
+  function gridCost(sccScale, airScale) {
+    return (gr.cl*sccScale + gr.air*airScale + gr.eco) * s.kwh;
+  }
+  const hr = hR[s.heat];
+  function heatCost(sccScale) {
+    return hr.co2sf * (SCC_MID*sccScale) * s.sqft + hr.airsf*s.sqft;
+  }
+
+  const energyLo  = gridCost(gridScales.lo,  airScales.lo)  + heatCost(gridScales.lo);
+  const energyMid = gridCost(gridScales.mid, airScales.mid) + heatCost(gridScales.mid);
+  const energyHi  = gridCost(gridScales.hi,  airScales.hi)  + heatCost(gridScales.hi);
+
+  // ── CONSUMER ranges ──
+  // Clothing: Ellen MacArthur $0.70 low / $0.90 central / $1.20 high per garment
+  // Electronics: Xu et al. $60 low / $120 central / $180 high per device
+  // Shopping: BEA lower / True Price central / Trucost 1.8× higher
+  // Streaming: Andrae low (36g/hr) / central (65g/hr) / high (97g/hr)
+  const sm = spendMul[s.spend];
+  const consumerLo  = s.clothes*0.70*sm + s.elec*60  + spendBase*sm*0.7 + s.stream*365*(0.036/1000*SCC_LO);
+  const consumerMid = s.clothes*0.90*sm + s.elec*120 + spendBase*sm     + s.stream*365*(0.065/1000*SCC_MID)*(gr.cl/gR.natgas.cl);
+  const consumerHi  = s.clothes*1.20*sm + s.elec*180 + spendBase*sm*1.8 + s.stream*365*(0.097/1000*SCC_HI);
+
+  const totalLo  = transportLo  + foodLo  + energyLo  + consumerLo;
+  const totalMid = transportMid + foodMid + energyMid + consumerMid;
+  const totalHi  = transportHi  + foodHi  + energyHi  + consumerHi;
+
+  return {
+    total: { lo:totalLo, mid:totalMid, hi:totalHi },
+    cats: [
+      { label:'Transportation', color:CLR.transport,
+        lo:transportLo, mid:transportMid, hi:transportHi,
+        srcLo:'EPA SCC $51 (2017); best-in-class MPG; IPCC RF 1.3× (Lee et al. 2021)',
+        srcMid:'EPA SCC $190 (2023); avg MPG; IPCC RF 1.9×',
+        srcHi:'Rennert et al. SCC $312 (Nature 2022); older fleet MPG; IPCC RF 2.7×' },
+      { label:'Food & Diet', color:CLR.food,
+        lo:foodLo, mid:foodMid, hi:foodHi,
+        srcLo:'True Price Foundation lower estimates; Poore & Nemecek (2018) conservative range',
+        srcMid:'FAO True Cost of Food (2021) central estimates',
+        srcHi:'Pirog & Benjamin (2001); NAS updated upper; includes full externality chain' },
+      { label:'Home Energy', color:CLR.energy,
+        lo:energyLo, mid:energyMid, hi:energyHi,
+        srcLo:'NREL lower lifecycle bounds; EPA SCC $51; NAS air quality lower confidence interval',
+        srcMid:'NAS (2010) / Epstein (2011) central; EPA SCC $190',
+        srcHi:'Epstein (2011) upper bounds; Rennert SCC $312; NAS air quality upper CI ±40%' },
+      { label:'Consumer Goods', color:CLR.consumer,
+        lo:consumerLo, mid:consumerMid, hi:consumerHi,
+        srcLo:'Ellen MacArthur $0.70/garment; Xu et al. $60/device; BEA lower consumer estimates',
+        srcMid:'Ellen MacArthur $0.90/garment; Xu et al. $120/device; True Price (2022) central',
+        srcHi:'Ellen MacArthur $1.20/garment; Xu et al. $180/device; Trucost 1.8× multiplier' }
+    ]
+  };
+}
+
+function drawSensitivityRange() {
+  const data = calcRange();
+  const {ctx,w,h} = getCanvas('ch-range');
+  const pad={t:28,r:160,b:50,l:130};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+
+  const rows = [...data.cats, {
+    label:'TOTAL', color:'#1a3028',
+    lo:data.total.lo, mid:data.total.mid, hi:data.total.hi
+  }];
+  const n=rows.length;
+  const maxVal = Math.max(...rows.map(r=>r.hi)) * 1.08;
+  const rowH = ch/n;
+
+  // Grid lines (vertical)
+  ctx.strokeStyle='rgba(200,210,205,0.3)'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const x=pad.l+cw*(i/4);
+    ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,pad.t+ch); ctx.stroke();
+    ctx.fillStyle='#8ca89a'; ctx.font='10px system-ui'; ctx.textAlign='center'; ctx.textBaseline='top';
+    const v=maxVal*i/4;
+    ctx.fillText('$'+(v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)), x, pad.t+ch+6);
+  }
+
+  rows.forEach((row,ri) => {
+    const cy = pad.t + ri*rowH + rowH/2;
+    const barH = ri===n-1 ? 22 : 16;
+    const isTotal = ri===n-1;
+
+    // Row label
+    ctx.fillStyle = isTotal ? '#1a3028' : '#4a6055';
+    ctx.font = isTotal ? 'bold 12px system-ui' : '11px system-ui';
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText(row.label, pad.l-10, cy);
+
+    // Range bar (lo → hi)
+    const xLo  = pad.l + cw*(row.lo/maxVal);
+    const xMid = pad.l + cw*(row.mid/maxVal);
+    const xHi  = pad.l + cw*(row.hi/maxVal);
+
+    // Background range band (lo to hi)
+    ctx.fillStyle = row.color+'28';
+    ctx.beginPath();
+    const rr=3, bx=xLo, by=cy-barH/2, bw2=xHi-xLo, bh2=barH;
+    ctx.moveTo(bx+rr,by); ctx.lineTo(bx+bw2-rr,by);
+    ctx.quadraticCurveTo(bx+bw2,by,bx+bw2,by+rr);
+    ctx.lineTo(bx+bw2,by+bh2-rr); ctx.quadraticCurveTo(bx+bw2,by+bh2,bx+bw2-rr,by+bh2);
+    ctx.lineTo(bx+rr,by+bh2); ctx.quadraticCurveTo(bx,by+bh2,bx,by+bh2-rr);
+    ctx.lineTo(bx,by+rr); ctx.quadraticCurveTo(bx,by,bx+rr,by);
+    ctx.closePath();
+    ctx.fill();
+
+    // Whisker line (lo to hi)
+    ctx.strokeStyle = row.color+'80'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(xLo, cy); ctx.lineTo(xHi, cy); ctx.stroke();
+
+    // Low cap
+    ctx.strokeStyle=row.color+'99'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(xLo, cy-barH/2+3); ctx.lineTo(xLo, cy+barH/2-3); ctx.stroke();
+
+    // High cap
+    ctx.beginPath(); ctx.moveTo(xHi, cy-barH/2+3); ctx.lineTo(xHi, cy+barH/2-3); ctx.stroke();
+
+    // Central bar (solid)
+    const midW = Math.max(6, isTotal ? 10 : 7);
+    ctx.fillStyle = row.color;
+    ctx.fillRect(xMid-midW/2, cy-barH/2, midW, barH);
+
+    // Dollar labels
+    ctx.font='10px system-ui'; ctx.textBaseline='middle';
+    // Lo
+    ctx.fillStyle=isTotal?'#2f5a47':CLR.transport===row.color?'#3d6648':'#4a6055';
+    ctx.textAlign='right';
+    ctx.fillStyle='#6aab7a';
+    ctx.fillText('$'+(row.lo>=1000?(row.lo/1000).toFixed(0)+'k':Math.round(row.lo)), xLo-5, cy);
+    // Mid (above bar)
+    ctx.fillStyle=row.color; ctx.font=isTotal?'bold 11px system-ui':'bold 10px system-ui';
+    ctx.textAlign='center';
+    ctx.fillText('$'+(row.mid>=1000?(row.mid/1000).toFixed(1)+'k':Math.round(row.mid)), xMid, cy-barH/2-5);
+    // Hi
+    ctx.fillStyle='#c94040'; ctx.font='10px system-ui';
+    ctx.textAlign='left';
+    ctx.fillText('$'+(row.hi>=1000?(row.hi/1000).toFixed(0)+'k':Math.round(row.hi)), xHi+5, cy);
+
+    // Separator line
+    if(ri<n-1){
+      ctx.strokeStyle='rgba(200,210,205,0.4)'; ctx.lineWidth=1; ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(pad.l-80, pad.t+(ri+1)*rowH); ctx.lineTo(pad.l+cw, pad.t+(ri+1)*rowH); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  });
+
+  // Axis
+  ctx.strokeStyle='rgba(200,210,205,0.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.stroke();
+
+  // Legend top-right
+  const lx=pad.l+cw+12, ly=pad.t+8;
+  [['Low est.','#6aab7a'],['Central','#1a3028'],['High est.','#c94040']].forEach(([lbl,c],i)=>{
+    ctx.fillStyle=c; ctx.fillRect(lx,ly+i*18,10,10);
+    ctx.fillStyle='#5a7a6a'; ctx.font='10px system-ui'; ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText(lbl, lx+14, ly+i*18+1);
+  });
+
+  // Detail cards
+  const detail = document.getElementById('range-detail');
+  detail.innerHTML = data.cats.map(row => `
+    <div class="rng-card">
+      <div class="rng-card-accent" style="background:${row.color}"></div>
+      <div class="rng-card-title" style="padding-left:.5rem">${row.label}</div>
+      <div class="rng-card-vals" style="padding-left:.5rem">
+        <span class="rng-lo">$${Math.round(row.lo).toLocaleString()}</span>
+        <span class="rng-arrow">→</span>
+        <span class="rng-mid">$${Math.round(row.mid).toLocaleString()}</span>
+        <span class="rng-arrow">→</span>
+        <span class="rng-hi">$${Math.round(row.hi).toLocaleString()}</span>
+      </div>
+      <div class="rng-src" style="padding-left:.5rem">
+        <span style="color:#6aab7a;font-style:normal">▼ Low:</span> ${row.srcLo}<br>
+        <span style="color:#1a3028;font-style:normal">● Central:</span> ${row.srcMid}<br>
+        <span style="color:#c94040;font-style:normal">▲ High:</span> ${row.srcHi}
+      </div>
+    </div>
+  `).join('');
 }
 
 window.addEventListener('resize',()=>go());
