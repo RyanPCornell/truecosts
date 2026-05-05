@@ -222,13 +222,13 @@ canvas{display:block}
         <div class="cat">Air Travel</div>
         <div class="cr">
           <div class="cl"><span class="cn">Short-haul flights / year <small style="color:var(--mist);font-size:.72em">&lt;3 hrs</small></span><span class="cv" id="dv-fshort">2</span></div>
-          <input type="range" id="sl-fshort" min="0" max="30" step="1" value="2" oninput="slVal('fshort',this.value);go()">
-          <div class="tick-row"><span class="tick">0</span><span class="tick">15</span><span class="tick">30</span></div>
+          <input type="range" id="sl-fshort" min="0" max="12" step="1" value="2" oninput="slVal('fshort',this.value);go()">
+          <div class="tick-row"><span class="tick">0</span><span class="tick">← US avg ~3</span><span class="tick">12</span></div>
         </div>
         <div class="cr">
           <div class="cl"><span class="cn">Long-haul flights / year <small style="color:var(--mist);font-size:.72em">&gt;3 hrs</small></span><span class="cv" id="dv-flong">1</span></div>
-          <input type="range" id="sl-flong" min="0" max="20" step="1" value="1" oninput="slVal('flong',this.value);go()">
-          <div class="tick-row"><span class="tick">0</span><span class="tick">10</span><span class="tick">20</span></div>
+          <input type="range" id="sl-flong" min="0" max="8" step="1" value="1" oninput="slVal('flong',this.value);go()">
+          <div class="tick-row"><span class="tick">0</span><span class="tick">← US avg ~1</span><span class="tick">8</span></div>
         </div>
         <div class="cat">Public Transit</div>
         <div class="cr">
@@ -264,7 +264,8 @@ canvas{display:block}
         </div>
         <div class="cr">
           <div class="cl"><span class="cn">Takeout / delivery meals per week</span><span class="cv" id="dv-takeout">2</span></div>
-          <input type="range" id="sl-takeout" min="0" max="21" step="1" value="2" oninput="slVal('takeout',this.value);go()">
+          <input type="range" id="sl-takeout" min="0" max="10" step="1" value="2" oninput="slVal('takeout',this.value);go()">
+          <div class="tick-row"><span class="tick">0</span><span class="tick">← US avg ~4–5/wk</span><span class="tick">10</span></div>
         </div>
       </div>
     </div>
@@ -314,13 +315,14 @@ canvas{display:block}
       <div class="pb">
         <div class="cat">Clothing &amp; Electronics</div>
         <div class="cr">
-          <div class="cl"><span class="cn">New clothing items / year</span><span class="cv" id="dv-clothes">25</span></div>
-          <input type="range" id="sl-clothes" min="0" max="150" step="5" value="25" oninput="slVal('clothes',this.value);go()">
-          <div class="tick-row"><span class="tick">0</span><span class="tick">75</span><span class="tick">150</span></div>
+          <div class="cl"><span class="cn">New clothing items / month</span><span class="cv" id="dv-clothes">2</span></div>
+          <input type="range" id="sl-clothes" min="0" max="11" step="1" value="2" oninput="slVal('clothes',this.value);go()">
+          <div class="tick-row"><span class="tick">0</span><span class="tick">← US avg ~4–6/mo</span><span class="tick">11</span></div>
         </div>
         <div class="cr">
           <div class="cl"><span class="cn">New electronic devices / year</span><span class="cv" id="dv-elec">1</span></div>
-          <input type="range" id="sl-elec" min="0" max="12" step="1" value="1" oninput="slVal('elec',this.value);go()">
+          <input type="range" id="sl-elec" min="0" max="8" step="1" value="1" oninput="slVal('elec',this.value);go()">
+          <div class="tick-row"><span class="tick">0</span><span class="tick">← US avg ~2–3</span><span class="tick">8</span></div>
         </div>
         <div class="cat">Lifestyle</div>
         <div class="cr">
@@ -334,8 +336,8 @@ canvas{display:block}
         </div>
         <div class="cr" style="margin-top:.8rem">
           <div class="cl"><span class="cn">Daily streaming / internet use</span><span class="cv" id="dv-stream">4 hrs/day</span></div>
-          <input type="range" id="sl-stream" min="0" max="16" step="1" value="4" oninput="slVal('stream',this.value);go()">
-          <div class="tick-row"><span class="tick">0 hrs</span><span class="tick">8 hrs</span><span class="tick">16 hrs</span></div>
+          <input type="range" id="sl-stream" min="0" max="10" step="1" value="4" oninput="slVal('stream',this.value);go()">
+          <div class="tick-row"><span class="tick">0 hrs</span><span class="tick">← US avg ~3 hrs</span><span class="tick">10 hrs</span></div>
         </div>
       </div>
     </div>
@@ -352,15 +354,8 @@ canvas{display:block}
         <div class="t-sub sans">Unpriced social &amp; environmental costs imposed on society per year</div>
       </div>
       <div class="t-pills">
-        <div class="pill" id="p-avg">vs. US avg: —</div>
         <div class="pill" id="p-co2">CO₂e: — t/yr</div>
-        <div class="pill" id="p-grade">—</div>
       </div>
-    </div>
-
-    <!-- BENCHMARK NOTE -->
-    <div style="background:rgba(26,48,40,0.06);border:1px solid rgba(26,48,40,0.1);border-left:3px solid var(--gold);border-radius:var(--r);padding:.9rem 1.25rem;font-family:system-ui,sans-serif;font-size:.76rem;line-height:1.65;color:#3d5a4a">
-      <strong style="color:var(--forest)">📌 About the "US Average" Comparison:</strong> Aggregate studies (NAS 2010; Trucost 2019) estimate total per-capita externalities at ~$18,400/yr, but include ~$6,500 in categories this calculator does <em>not</em> model — road infrastructure wear (~$1,200), noise pollution (~$800), water/sewer systems (~$600), healthcare system burden (~$1,500), and military fuel-security costs (~$2,000+) — because these are largely fixed and not meaningfully changed by the individual choices tracked here. This calculator's comparison uses an <strong>adjusted benchmark of ~$11,900</strong> ($18,400 − $6,500), representing only the externality categories that this tool actually measures. See the Methodology tab below for full details.
     </div>
 
 
@@ -411,14 +406,10 @@ canvas{display:block}
         <div class="chart-tabs">
           <button class="ctab on" onclick="switchTab('bar',this)">By Category</button>
           <button class="ctab" onclick="switchTab('donut',this)">Composition</button>
-          <button class="ctab" onclick="switchTab('compare',this)">vs. Benchmarks</button>
-          <button class="ctab" onclick="switchTab('sens',this)">Vehicle Sensitivity</button>
           <button class="ctab" onclick="switchTab('range',this)">Sensitivity Analysis</button>
         </div>
         <div class="cview on" id="cv-bar"><div class="chart-wrap"><canvas id="ch-bar"></canvas></div></div>
         <div class="cview" id="cv-donut"><div class="chart-wrap"><canvas id="ch-donut"></canvas></div></div>
-        <div class="cview" id="cv-compare"><div class="chart-wrap"><canvas id="ch-compare"></canvas></div></div>
-        <div class="cview" id="cv-sens"><div class="chart-wrap"><canvas id="ch-sens"></canvas></div></div>
         <div class="cview" id="cv-range">
           <p style="font-family:system-ui,sans-serif;font-size:.78rem;color:#5a7a6a;margin-bottom:1rem;line-height:1.6;font-weight:300">
             Each bar shows the <strong style="color:var(--forest)">low, central, and high</strong> externality estimates for your current inputs, drawn from different published sources and parameter assumptions (e.g. low/central/high Social Cost of Carbon, different MPG assumptions, alternative diet studies). The central bar is what the calculator uses.
@@ -435,23 +426,6 @@ canvas{display:block}
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- BREAKDOWN TABLE -->
-    <div class="panel">
-      <div class="ph"><span class="ph-icon">📋</span><span class="ph-title">Line-Item Breakdown</span></div>
-      <table class="bk-table">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Your Inputs</th>
-            <th style="width:140px">Relative Impact</th>
-            <th>Annual Cost</th>
-          </tr>
-        </thead>
-        <tbody id="bk-body"><tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--mist)">Loading…</td></tr></tbody>
-      </table>
-      <div class="meth">All figures in 2024 USD. Social Cost of Carbon: $190/tCO₂e (EPA, 2023, 2.5% discount rate). Diet externalities from FAO True Cost of Food (2021) &amp; True Price Foundation (2022). Vehicle rates from NAS Hidden Costs of Energy (2010) + EPA SCC. Flight RF multiplier: 1.9× (IPCC AR6, 2022). Grid externalities: Epstein et al. (2011) for coal; NREL lifecycle assessments for renewables/nuclear.</div>
     </div>
 
     <!-- HARM TYPE SECTION -->
@@ -511,6 +485,75 @@ canvas{display:block}
       </div>
     </div>
 
+    <!-- BREAKDOWN TABLE -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">📋</span><span class="ph-title">Line-Item Breakdown</span></div>
+      <table class="bk-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Your Inputs</th>
+            <th style="width:140px">Relative Impact</th>
+            <th>Annual Cost</th>
+          </tr>
+        </thead>
+        <tbody id="bk-body"><tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--mist)">Loading…</td></tr></tbody>
+      </table>
+      <div class="meth">All figures in 2024 USD. Social Cost of Carbon: $190/tCO₂e (EPA, 2023, 2.5% discount rate). Diet externalities from FAO True Cost of Food (2021) &amp; True Price Foundation (2022). Vehicle rates from NAS Hidden Costs of Energy (2010) + EPA SCC. Flight RF multiplier: 1.9× (IPCC AR6, 2022). Grid externalities: Epstein et al. (2011) for coal; NREL lifecycle assessments for renewables/nuclear.</div>
+    </div>
+
+    <!-- UNCOUNTED EXTERNALITIES -->
+    <div class="panel">
+      <div class="ph"><span class="ph-icon">🔍</span><span class="ph-title">Externalities Not Included in This Calculator</span></div>
+      <div class="pb">
+        <p style="font-family:system-ui,sans-serif;font-size:.82rem;line-height:1.7;color:#3d5a4a;margin-bottom:1rem">
+          This calculator focuses on externalities that are meaningfully responsive to individual lifestyle choices. However, aggregate studies estimate that the average American generates an additional <strong>~$6,500–$8,000/year</strong> in externalities from categories that are largely fixed, systemic, or not calculable from the inputs available here (NAS 2010; Trucost 2019). These are described below.
+        </p>
+        <table class="bk-table">
+          <thead>
+            <tr><th>Uncounted Category</th><th>Est. $/person/yr</th><th>Why Not Included</th><th>Source</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="td-cat">🛣️ Road infrastructure wear</div></td>
+              <td class="td-desc">~$1,200</td>
+              <td class="td-desc">The cost of road damage and maintenance is largely fixed regardless of modest changes in individual driving behavior within normal ranges.</td>
+              <td class="td-desc">NAS (2010) Ch. 5 [2]</td>
+            </tr>
+            <tr>
+              <td><div class="td-cat">🔊 Noise pollution</div></td>
+              <td class="td-desc">~$800</td>
+              <td class="td-desc">Traffic, aviation, and industrial noise harm is highly location-dependent and cannot be meaningfully calculated from the inputs available in this tool.</td>
+              <td class="td-desc">NAS (2010); WHO (2018)</td>
+            </tr>
+            <tr>
+              <td><div class="td-cat">💧 Water &amp; sewer infrastructure</div></td>
+              <td class="td-desc">~$600</td>
+              <td class="td-desc">Systemic costs of water extraction and treatment infrastructure. Primarily driven by population and industrial use rather than individual consumer choices.</td>
+              <td class="td-desc">Trucost / S&amp;P Global (2019) [11]</td>
+            </tr>
+            <tr>
+              <td><div class="td-cat">🏥 Healthcare system burden</div></td>
+              <td class="td-desc">~$1,500</td>
+              <td class="td-desc">Systemic costs that pollution-driven illness imposes on the broader healthcare system — beyond the individual health damages already captured in the energy and transportation categories above.</td>
+              <td class="td-desc">NAS (2010) [2]; Epstein et al. (2011) [3]</td>
+            </tr>
+            <tr>
+              <td><div class="td-cat">🛡️ Military fuel-security costs</div></td>
+              <td class="td-desc">~$2,000+</td>
+              <td class="td-desc">The cost of U.S. military operations to secure global oil supply chains is a real and significant externality of fossil fuel consumption, but is not meaningfully changed by individual lifestyle decisions.</td>
+              <td class="td-desc">Stern (2010); NAS (2010) [2]</td>
+            </tr>
+            <tr>
+              <td><div class="td-cat"><strong>Total not modeled</strong></div></td>
+              <td class="td-desc"><strong>~$6,100–$8,100</strong></td>
+              <td colspan="2" class="td-desc">Conservative midpoint estimate based on the range across methodologies in NAS (2010) and Trucost (2019). These costs are real but fall outside the scope of what individuals can control through the choices tracked here.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- SOURCES -->
     <div class="panel">
       <div class="ph"><span class="ph-icon">📚</span><span class="ph-title">Academic Sources &amp; Methodology</span></div>
@@ -530,6 +573,11 @@ canvas{display:block}
         <div class="src-item"><div class="src-n">[13]</div><div class="src-t">Lee, D.S., et al. (2021). The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018. <em>Atmospheric Environment, 244</em>, 117834. Aviation radiative forcing range: 1.3× (low) to 2.7× (high), central 1.9×. Used in flight externality sensitivity analysis.</div></div>
         <div class="src-item"><div class="src-n">[14]</div><div class="src-t">U.S. Census Bureau. (2024). <em>Characteristics of new housing: 2024.</em> Median new single-family home size: 2,210 sq ft. Used to set the home size slider midpoint and tick label.</div></div>
         <div class="src-item"><div class="src-n">[15]</div><div class="src-t">Federal Highway Administration. (2023). <em>Highway statistics 2023, Table HM-44.</em> U.S. DOT. Average annual miles per licensed driver: ~13,700 in 2023. Used to calibrate the miles-driven slider range and tick label.</div></div>
+        <div class="src-item"><div class="src-n">[16]</div><div class="src-t">PIRG Education Fund. (2023). <em>Fast fashion by the numbers.</em> pirg.org. Average American purchases ~53 new clothing items per year — four times the rate in 2000. Used to set clothing slider midpoint (~4–6 items/month).</div></div>
+        <div class="src-item"><div class="src-n">[17]</div><div class="src-t">US Foods. (2023). <em>2023 diner dispatch: American dining out habits survey.</em> usfoods.com. Americans order takeout or delivery an average of 4.5 times per month (~1 per week). Used to calibrate the takeout/delivery slider midpoint.</div></div>
+        <div class="src-item"><div class="src-n">[18]</div><div class="src-t">DataReportal / SlickText. (2023). <em>Digital 2023: Global overview report; Streaming time statistics.</em> Average American spends ~3 hours and 9 minutes per day on streaming content specifically (distinct from total screen time of ~7 hrs). Used to calibrate the streaming slider midpoint.</div></div>
+        <div class="src-item"><div class="src-n">[19]</div><div class="src-t">Bureau of Transportation Statistics. (2023). <em>Airline traffic data: Domestic and international enplanements.</em> U.S. DOT. Domestic enplanements ~819M in 2023; international ~100M. Per-capita rates (~2.4 domestic, ~0.3 international flights/person/yr) used to calibrate flight slider ranges and midpoints.</div></div>
+        <div class="src-item"><div class="src-n">[20]</div><div class="src-t">U.S. Energy Information Administration. (2023). <em>Residential energy consumption: Average US household electricity use.</em> eia.gov. US average household electricity consumption: ~10,500 kWh/yr. Used as the default value for the annual electricity slider.</div></div>
       </div>
     </div>
 
@@ -538,7 +586,7 @@ canvas{display:block}
       <div class="ph"><span class="ph-icon">🔬</span><span class="ph-title">Methodology — How This Calculator Works</span></div>
       <div class="pb">
         <div class="chart-tabs" id="meth-tabs">
-          <button class="ctab on" onclick="switchMeth('benchmark',this)">US Benchmark</button>
+          <button class="ctab on" onclick="switchMeth('notincluded',this)">What's Not Included</button>
           <button class="ctab" onclick="switchMeth('scc',this)">Social Cost of Carbon</button>
           <button class="ctab" onclick="switchMeth('transport',this)">Transportation</button>
           <button class="ctab" onclick="switchMeth('food',this)">Food</button>
@@ -547,35 +595,19 @@ canvas{display:block}
         </div>
 
         <!-- BENCHMARK TAB -->
-        <div class="hview on" id="mv-benchmark">
-          <div class="harm-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:1.25rem">
-            <div class="harm-card">
-              <div class="harm-card-accent" style="background:#c8963e"></div>
-              <span class="harm-icon">📊</span>
-              <div class="harm-name">Raw US Average</div>
-              <div class="harm-val">$18,400</div>
-              <div class="harm-pct" style="color:#c8963e">per person per year</div>
-              <div class="harm-desc">Aggregate estimate from NAS (2010) and Trucost/S&amp;P Global (2019) across all externality categories including those this calculator does not track.</div>
-            </div>
-            <div class="harm-card">
-              <div class="harm-card-accent" style="background:#4a7c59"></div>
-              <span class="harm-icon">🎯</span>
-              <div class="harm-name">Adjusted Benchmark (Used Here)</div>
-              <div class="harm-val">$11,900</div>
-              <div class="harm-pct" style="color:#4a7c59">$18,400 − $6,500 uncounted</div>
-              <div class="harm-desc">Calculated by subtracting the ~$6,500 in externality categories the calculator does not model. This is the fair comparison value for your total.</div>
-            </div>
-          </div>
-          <p style="font-family:system-ui,sans-serif;font-size:.82rem;line-height:1.7;color:#3d5a4a;margin-bottom:1rem"><strong>Why subtract ~$6,500?</strong> The aggregate studies include externality categories that are largely determined by systemic and infrastructure factors — not meaningfully responsive to the individual lifestyle choices this calculator tracks. Comparing your total against the full $18,400 would make every user appear far below average even with high-impact choices, which would be misleading.</p>
-          <table class="bk-table" style="margin-bottom:.5rem">
-            <thead><tr><th>Uncounted Category</th><th>Est. $/person/yr</th><th>Why Not Included</th><th>Source</th></tr></thead>
+        <div class="hview on" id="mv-notincluded">
+          <p style="font-family:system-ui,sans-serif;font-size:.82rem;line-height:1.7;color:#3d5a4a;margin-bottom:1rem">
+            This calculator focuses on externalities that are <strong>directly responsive to individual lifestyle choices</strong>. Several significant externality categories from the aggregate literature are intentionally excluded because they are systemic, location-dependent, or not calculable from the inputs available. These are detailed in the <strong>"Externalities Not Included"</strong> panel above. The key sources for the excluded categories are listed below.
+          </p>
+          <table class="bk-table">
+            <thead><tr><th>Excluded Category</th><th>Est. $/person/yr</th><th>Source</th></tr></thead>
             <tbody>
-              <tr><td><div class="td-cat">🛣️ Road infrastructure wear</div></td><td class="td-desc">~$1,200</td><td class="td-desc">Fixed cost of road maintenance; does not meaningfully change with individual choices within normal driving ranges</td><td class="td-desc">NAS (2010) Ch. 5</td></tr>
-              <tr><td><div class="td-cat">🔊 Noise pollution</div></td><td class="td-desc">~$800</td><td class="td-desc">Traffic and airport noise; highly location-dependent, not calculable from the inputs available here</td><td class="td-desc">NAS (2010); WHO (2018)</td></tr>
-              <tr><td><div class="td-cat">💧 Water &amp; sewer systems</div></td><td class="td-desc">~$600</td><td class="td-desc">Infrastructure externalities from water extraction and treatment; primarily systemic, not individual-choice driven</td><td class="td-desc">Trucost (2019)</td></tr>
-              <tr><td><div class="td-cat">🏥 Healthcare system burden</div></td><td class="td-desc">~$1,500</td><td class="td-desc">Systemic costs of pollution-driven disease to the broader healthcare system beyond individual health damages already counted in energy/transport</td><td class="td-desc">NAS (2010); Epstein (2011)</td></tr>
-              <tr><td><div class="td-cat">🛡️ Military fuel security</div></td><td class="td-desc">~$2,000+</td><td class="td-desc">Defense costs of securing global oil supply chains; a real externality but one that individuals cannot meaningfully change through lifestyle choices</td><td class="td-desc">Stern (2010); NAS (2010)</td></tr>
-              <tr><td><div class="td-cat"><strong>Total subtracted</strong></div></td><td class="td-desc"><strong>~$6,500</strong></td><td colspan="2" class="td-desc">Conservative midpoint estimate. The full range is roughly $5,000–$8,000 depending on methodology.</td></tr>
+              <tr><td><div class="td-cat">🛣️ Road infrastructure</div></td><td class="td-desc">~$1,200</td><td class="td-desc">NAS (2010) Ch. 5 [2]</td></tr>
+              <tr><td><div class="td-cat">🔊 Noise pollution</div></td><td class="td-desc">~$800</td><td class="td-desc">NAS (2010) [2]; WHO Environmental Noise Guidelines (2018)</td></tr>
+              <tr><td><div class="td-cat">💧 Water &amp; sewer infrastructure</div></td><td class="td-desc">~$600</td><td class="td-desc">Trucost / S&amp;P Global (2019) [11]</td></tr>
+              <tr><td><div class="td-cat">🏥 Healthcare system burden</div></td><td class="td-desc">~$1,500</td><td class="td-desc">NAS (2010) [2]; Epstein et al. (2011) [3]</td></tr>
+              <tr><td><div class="td-cat">🛡️ Military fuel-security</div></td><td class="td-desc">~$2,000+</td><td class="td-desc">Stern, R.J. (2010). United States cost of military force projection in the Persian Gulf. <em>Energy Policy, 38</em>(6), 2816–2825</td></tr>
+              <tr><td><div class="td-cat"><strong>Total excluded</strong></div></td><td class="td-desc"><strong>~$6,100–$8,100</strong></td><td class="td-desc">NAS (2010) [2]; Trucost (2019) [11]</td></tr>
             </tbody>
           </table>
         </div>
@@ -648,7 +680,7 @@ canvas{display:block}
           <table class="bk-table" style="margin-bottom:1rem">
             <thead><tr><th>Category</th><th>Rate</th><th>Derivation</th><th>Source</th></tr></thead>
             <tbody>
-              <tr><td class="td-cat">Clothing</td><td class="td-desc">$0.90/garment</td><td class="td-desc">Midpoint of $0.70–$1.20 range. Covers water pollution (textile dyeing = ~20% of global industrial water pollution), labor exploitation, end-of-life waste.</td><td class="td-desc">Ellen MacArthur (2017) [8]</td></tr>
+              <tr><td class="td-cat">Clothing</td><td class="td-desc">$0.90/garment × items/month × 12</td><td class="td-desc">Midpoint of $0.70–$1.20 range. Covers water pollution (textile dyeing = ~20% of global industrial water pollution), labor exploitation, end-of-life waste. US average: ~53–68 garments/yr = ~4–6/month.</td><td class="td-desc">Ellen MacArthur (2017) [8]; PIRG (2023) [16]</td></tr>
               <tr><td class="td-cat">Electronics</td><td class="td-desc">$120/device</td><td class="td-desc">Midpoint of $60–$180 range. Covers e-waste toxicity (only 17.4% formally recycled globally), cobalt/rare earth mining harms, semiconductor fab energy.</td><td class="td-desc">Xu et al. (2020) [9]; Forti et al. (2020)</td></tr>
               <tr><td class="td-cat">General shopping</td><td class="td-desc">$340 × spending multiplier</td><td class="td-desc">Baseline supply-chain and end-of-life externalities across all consumer goods. Multiplier: 0.45 (minimal) → 1.0 (average) → 3.2 (very high), calibrated to U.S. BEA personal consumption data.</td><td class="td-desc">True Price (2022) [5]; BEA (2023)</td></tr>
               <tr><td class="td-cat">Streaming</td><td class="td-desc">~$0.012/hr (nat. gas grid)</td><td class="td-desc">65g CO₂/hr (weighted SD/HD average) × SCC ÷ 1,000,000. Scales with grid mix: solar grid ≈ $0.001/hr; coal grid ≈ $0.035/hr.</td><td class="td-desc">Andrae &amp; Edler (2015) [10]; IEA (2023)</td></tr>
@@ -669,7 +701,7 @@ canvas{display:block}
 const DEFS = {vehicle:'ev',miles:12000,fshort:2,flong:1,transit:500,
   diet:'mixed',waste:1,local:1,takeout:2,
   grid:'natgas',kwh:10500,heat:'natgas',sqft:1800,
-  clothes:25,elec:1,spend:'average',stream:4};
+  clothes:2,elec:1,spend:'average',stream:4};
 let s = {...DEFS};
 
 // ═══════════════════════════════════════════════
@@ -723,10 +755,6 @@ const spendMul = {minimal:0.45,average:1.0,high:1.8,'very-high':3.2};
 const spendBase= 340;
 const streamPH = 0.065/1000*SCC; // 65g CO₂/hr * SCC
 
-const US_T = 11900; // Adjusted: $18,400 total US avg (NAS 2010; Trucost 2019) minus ~$6,500
-                    // for categories not modeled here (road infrastructure, noise, water
-                    // systems, healthcare burden, military fuel security). See methodology tab.
-const US_CATS = {transport:4700,food:3800,energy:2200,consumer:1200};
 const CLR = {transport:'#4a7c59',food:'#c8963e',energy:'#5b9bd5',consumer:'#a07cc5'};
 
 // ═══════════════════════════════════════════════
@@ -759,7 +787,7 @@ function calc() {
 
   // Consumer
   const sm=spendMul[s.spend];
-  const cCl=s.clothes*clothExt*sm, cEl=s.elec*elecExt;
+  const cCl=s.clothes*12*clothExt*sm, cEl=s.elec*elecExt;
   const cSh=spendBase*sm, cSt=s.stream*365*streamPH*(gr.cl/gR.natgas.cl);
   const consumer = cCl+cEl+cSh+cSt;
 
@@ -874,140 +902,6 @@ function drawDonut(id, labels, values, colors) {
   });
 }
 
-function drawCompare(id, yourVals, benchmarks) {
-  const {ctx,w,h} = getCanvas(id);
-  const pad={t:20,r:20,b:50,l:70};
-  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
-  const groups=['You','US Avg (adj.)','Low-Impact','High-Impact'];
-  const data=[yourVals,...benchmarks];
-  const maxTotal=Math.max(...data.map(d=>d.reduce((a,b)=>a+b,0)))*1.05;
-  const n=groups.length, grpW=cw/n, bw=Math.min(60,grpW*0.6);
-  const cats=['transport','food','energy','consumer'];
-  const catClr=[CLR.transport,CLR.food,CLR.energy,CLR.consumer];
-
-  // Grid
-  ctx.strokeStyle='rgba(200,210,205,0.35)'; ctx.lineWidth=1;
-  for (let i=0;i<=4;i++) {
-    const y=pad.t+ch*(1-i/4);
-    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
-    ctx.fillStyle='#8ca89a'; ctx.font='11px system-ui'; ctx.textAlign='right';
-    const v=Math.round(maxTotal*i/4);
-    ctx.fillText('$'+(v>=1000?(v/1000).toFixed(0)+'k':v), pad.l-8, y+4);
-  }
-
-  // Stacked bars
-  data.forEach((vals,gi) => {
-    const x=pad.l+gi*grpW+(grpW-bw)/2;
-    let base=pad.t+ch;
-    vals.forEach((v,ci) => {
-      const bh=ch*(v/maxTotal);
-      base-=bh;
-      ctx.fillStyle=catClr[ci];
-      ctx.fillRect(x, base, bw, bh);
-    });
-    // Total label on top
-    const tot=vals.reduce((a,b)=>a+b,0);
-    ctx.fillStyle='#1a3028'; ctx.font='bold 11px system-ui'; ctx.textAlign='center';
-    ctx.fillText('$'+(tot>=1000?(tot/1000).toFixed(0)+'k':Math.round(tot)), x+bw/2, base-6);
-    // Group label
-    ctx.fillStyle='#8ca89a'; ctx.font='11px system-ui';
-    ctx.fillText(groups[gi], x+bw/2, pad.t+ch+16);
-  });
-
-  // Legend
-  const lx=pad.l, ly=pad.t-5;
-  catClr.forEach((c,i) => {
-    const x=lx+i*((cw)/4);
-    ctx.fillStyle=c; ctx.fillRect(x,ly,10,10);
-    ctx.fillStyle='#8ca89a'; ctx.font='10px system-ui'; ctx.textAlign='left';
-    ctx.fillText(cats[i].charAt(0).toUpperCase()+cats[i].slice(1),x+14,ly+9);
-  });
-
-  // Axis
-  ctx.strokeStyle='rgba(200,210,205,0.5)'; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
-}
-
-function drawSensitivity(id) {
-  const {ctx,w,h} = getCanvas(id);
-  const pad={t:16,r:20,b:72,l:70};
-  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
-  const mPts=[0,5000,10000,15000,20000,25000];
-  const vTypes=['gas','hybrid','ev','none'];
-  const vClrs=['#c94040','#c8963e','#4a7c59','#8ca89a'];
-  const vNames=['Gas Car','Hybrid','EV','No Car'];
-  const vDash=[null,null,null,[4,4]];
-
-  const savedV=s.vehicle, savedM=s.miles;
-  const lines=vTypes.map(vt=>{
-    s.vehicle=vt;
-    return mPts.map(m=>{s.miles=m;return calc().total;});
-  });
-  s.vehicle=savedV; s.miles=savedM;
-
-  const allVals=lines.flat();
-  const maxV=Math.max(...allVals)*1.05, minV=0;
-
-  // Grid
-  ctx.strokeStyle='rgba(200,210,205,0.35)'; ctx.lineWidth=1;
-  for (let i=0;i<=4;i++) {
-    const y=pad.t+ch*(1-i/4);
-    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
-    ctx.fillStyle='#8ca89a'; ctx.font='11px system-ui'; ctx.textAlign='right';
-    const v=Math.round(maxV*i/4);
-    ctx.fillText('$'+(v>=1000?(v/1000).toFixed(0)+'k':v), pad.l-8, y+4);
-  }
-
-  // Lines
-  lines.forEach((pts,li) => {
-    ctx.beginPath(); ctx.strokeStyle=vClrs[li]; ctx.lineWidth=2.5;
-    if(vDash[li]) ctx.setLineDash(vDash[li]); else ctx.setLineDash([]);
-    pts.forEach((v,pi) => {
-      const x=pad.l+pi/(mPts.length-1)*cw;
-      const y=pad.t+ch*(1-(v-minV)/(maxV-minV));
-      pi===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-    });
-    ctx.stroke();
-    // Dot at current miles
-    const curM=Math.min(savedM,25000);
-    const curIdx=mPts.findIndex(m=>m>=curM);
-    if (curIdx>0) {
-      const t=(curM-mPts[curIdx-1])/(mPts[curIdx]-mPts[curIdx-1]);
-      const curV=pts[curIdx-1]+t*(pts[curIdx]-pts[curIdx-1]);
-      const cx=pad.l+curM/25000*cw;
-      const cy=pad.t+ch*(1-(curV-minV)/(maxV-minV));
-      ctx.beginPath(); ctx.arc(cx,cy,5,0,2*Math.PI);
-      ctx.fillStyle=vClrs[li]; ctx.fill();
-      ctx.beginPath(); ctx.arc(cx,cy,5,0,2*Math.PI);
-      ctx.strokeStyle='#fdfaf5'; ctx.lineWidth=2; ctx.stroke();
-    }
-    ctx.setLineDash([]);
-  });
-
-  // X-axis labels
-  mPts.forEach((m,pi) => {
-    const x=pad.l+pi/(mPts.length-1)*cw;
-    ctx.fillStyle='#8ca89a'; ctx.font='10px system-ui'; ctx.textAlign='center';
-    ctx.fillText(m>=1000?(m/1000)+'k mi':m+' mi', x, pad.t+ch+16);
-  });
-
-  // Legend — placed below x-axis labels, clear of chart area
-  const legItemW = (cw) / vNames.length;
-  vNames.forEach((nm,i)=>{
-    const x = pad.l + i * legItemW;
-    const ly = pad.t + ch + 38;
-    ctx.strokeStyle=vClrs[i]; ctx.lineWidth=2.5;
-    if(vDash[i]) ctx.setLineDash(vDash[i]); else ctx.setLineDash([]);
-    ctx.beginPath(); ctx.moveTo(x,ly); ctx.lineTo(x+20,ly); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='#4a6055'; ctx.font='11px system-ui'; ctx.textAlign='left'; ctx.textBaseline='middle';
-    ctx.fillText(nm, x+24, ly);
-  });
-
-  // Axis
-  ctx.strokeStyle='rgba(200,210,205,0.5)'; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
-}
 
 // Chart state
 let activeTab='bar';
@@ -1028,14 +922,6 @@ function renderCharts(r) {
       [r.transport,r.food,r.energy,r.consumer],
       Object.values(CLR)
     );
-  } else if (activeTab==='compare') {
-    drawCompare('ch-compare',
-      [r.transport,r.food,r.energy,r.consumer],
-      [[US_CATS.transport,US_CATS.food,US_CATS.energy,US_CATS.consumer],
-       [900,700,350,200],[12000,6500,7000,5000]]
-    );
-  } else if (activeTab==='sens') {
-    drawSensitivity('ch-sens');
   } else if (activeTab==='range') {
     drawSensitivityRange();
   }
@@ -1053,22 +939,7 @@ function go() {
   tn.textContent='$'+Math.round(r.total).toLocaleString();
   tn.classList.add('pop');
 
-  const pct=(r.total-US_T)/US_T*100;
-  const pa=document.getElementById('p-avg');
-  pa.textContent='vs. adj. avg ($11.9k): '+(pct>=0?'+':'')+Math.round(pct)+'%';
-  pa.className='pill '+(pct>15?'bad':pct<-15?'good':'warn');
-
   document.getElementById('p-co2').textContent='CO₂e: ~'+Math.round(r.co2)+' t/yr';
-
-  const grade=r.total<4000?'🌟 Excellent — Top 10%'
-    :r.total<7000?'✅ Well Below Average'
-    :r.total<10000?'🟡 Below Adjusted Average'
-    :r.total<13800?'🔶 Near Adjusted Average'
-    :r.total<20000?'🔴 Above Average'
-    :'❗ Very High Impact';
-  const pg=document.getElementById('p-grade');
-  pg.textContent=grade;
-  pg.className='pill '+(r.total<11000?'good':r.total>21000?'bad':'warn');
 
   // Cards
   const vals=[r.transport,r.food,r.energy,r.consumer];
@@ -1104,7 +975,7 @@ function go() {
     {ico:'🛵',name:'Takeout & Delivery',cat:'food',desc:`${s.takeout} meals/wk · packaging + delivery`,val:d.fTk},
     {ico:'⚡',name:'Grid Electricity', cat:'energy',desc:`${s.kwh.toLocaleString()} kWh/yr · ${s.grid} grid`,val:d.gCl+d.gAir+d.gEc},
     {ico:'🔥',name:'Home Heating',     cat:'energy',desc:`${s.heat} · ${s.sqft.toLocaleString()} sq ft`,val:d.hCl+d.hAir},
-    {ico:'👕',name:'Clothing',         cat:'consumer',desc:`${s.clothes} items/yr · $${clothExt}/item`,val:d.cCl},
+    {ico:'👕',name:'Clothing',         cat:'consumer',desc:`${s.clothes} items/mo × 12 = ${s.clothes*12} items/yr · $${clothExt}/item ext.`,val:d.cCl},
     {ico:'💻',name:'Electronics',      cat:'consumer',desc:`${s.elec} devices/yr · ~$${elecExt}/device`,val:d.cEl},
     {ico:'🛒',name:'General Shopping', cat:'consumer',desc:`${s.spend} spending level`,val:d.cSh},
     {ico:'📺',name:'Streaming',        cat:'consumer',desc:`${s.stream} hrs/day · 65g CO₂/hr grid-adjusted`,val:d.cSt}
@@ -1133,7 +1004,7 @@ const disp={
   fshort:v=>v,flong:v=>v,transit:v=>Number(v).toLocaleString()+' mi',
   waste:v=>wasteStr[v],local:v=>localStr[v],takeout:v=>v,
   kwh:v=>Number(v).toLocaleString()+' kWh',sqft:v=>Number(v).toLocaleString()+' sq ft',
-  clothes:v=>v,elec:v=>v,stream:v=>v+' hrs/day'
+  clothes:v=>v+' items/mo',elec:v=>v,stream:v=>v+' hrs/day'
 };
 function slVal(k,v){ s[k]=Number(v); const el=document.getElementById('dv-'+k); if(el&&disp[k])el.textContent=disp[k](v); }
 function setSeg(k,v,btn){ s[k]=v; document.getElementById('sg-'+k).querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); go(); }
@@ -1149,7 +1020,7 @@ function switchTab(name,btn){
 
 function resetAll(){
   s={...DEFS};
-  Object.entries({miles:12000,fshort:2,flong:1,transit:500,waste:1,local:1,takeout:2,kwh:10500,sqft:1800,clothes:25,elec:1,stream:4}).forEach(([k,v])=>{
+  Object.entries({miles:12000,fshort:2,flong:1,transit:500,waste:1,local:1,takeout:2,kwh:10500,sqft:1800,clothes:2,elec:1,stream:4}).forEach(([k,v])=>{
     const el=document.getElementById('sl-'+k); if(el){el.value=v;slVal(k,v);}
   });
   [{k:'vehicle',v:'ev'},{k:'diet',v:'mixed'},{k:'heat',v:'natgas'},{k:'spend',v:'average'}].forEach(({k,v})=>{
@@ -1265,9 +1136,9 @@ function calcRange() {
   // Shopping: BEA lower / True Price central / Trucost 1.8× higher
   // Streaming: Andrae low (36g/hr) / central (65g/hr) / high (97g/hr)
   const sm = spendMul[s.spend];
-  const consumerLo  = s.clothes*0.70*sm + s.elec*60  + spendBase*sm*0.7 + s.stream*365*(0.036/1000*SCC_LO);
-  const consumerMid = s.clothes*0.90*sm + s.elec*120 + spendBase*sm     + s.stream*365*(0.065/1000*SCC_MID)*(gr.cl/gR.natgas.cl);
-  const consumerHi  = s.clothes*1.20*sm + s.elec*180 + spendBase*sm*1.8 + s.stream*365*(0.097/1000*SCC_HI);
+  const consumerLo  = s.clothes*12*0.70*sm + s.elec*60  + spendBase*sm*0.7 + s.stream*365*(0.036/1000*SCC_LO);
+  const consumerMid = s.clothes*12*0.90*sm + s.elec*120 + spendBase*sm     + s.stream*365*(0.065/1000*SCC_MID)*(gr.cl/gR.natgas.cl);
+  const consumerHi  = s.clothes*12*1.20*sm + s.elec*180 + spendBase*sm*1.8 + s.stream*365*(0.097/1000*SCC_HI);
 
   const totalLo  = transportLo  + foodLo  + energyLo  + consumerLo;
   const totalMid = transportMid + foodMid + energyMid + consumerMid;
@@ -1757,7 +1628,7 @@ function switchMeth(name, btn) {
   const tabs = btn.closest('.chart-tabs') || document.getElementById('meth-tabs');
   tabs.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
-  ['benchmark','scc','transport','food','energy','consumer'].forEach(n=>{
+  ['notincluded','scc','transport','food','energy','consumer'].forEach(n=>{
     const el=document.getElementById('mv-'+n);
     if(el) el.className='hview'+(n===name?' on':'');
   });
