@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>True Cost Calculator — Externalities of Daily Life</title>
+<title>True Cost Calculator v1.2 — Externalities of Daily Life</title>
 <style>
 :root {
   --forest:#1a3028; --forest-mid:#254538; --sage:#4a7c59; --sage-lt:#7aab8a;
@@ -32,153 +32,173 @@ header{background:var(--forest);position:sticky;top:0;z-index:50;border-bottom:1
 .wrap{max-width:1440px;margin:0 auto;padding:1.75rem 2rem 4rem;display:grid;grid-template-columns:400px 1fr;gap:1.75rem;align-items:start}
 
 /* PANEL */
-.panel{background:var(--white);border-radius:var(--r);border:1px solid var(--cream-dk);overflow:hidden}
-.ph{padding:.95rem 1.4rem;border-bottom:1px solid var(--cream-dk);display:flex;align-items:center;gap:.6rem}
-.ph-icon{font-size:1rem}
-.ph-title{font-size:1.05rem;color:var(--forest)}
-.pb{padding:1.2rem 1.4rem}
+/* LAYOUT - mobile first, single column */
+.wrap{max-width:960px;margin:0 auto;padding:1rem 1rem 100px;display:flex;flex-direction:column;gap:1rem}
 
-/* CONTROLS COL */
-.ctrl-col{display:flex;flex-direction:column;gap:1.2rem}
+/* PANEL */
+.panel{background:var(--white);border-radius:var(--r);border:1px solid var(--cream-dk);overflow:hidden}
+.ph{padding:.9rem 1.2rem;border-bottom:1px solid var(--cream-dk);display:flex;align-items:center;gap:.6rem;cursor:pointer;user-select:none}
+.ph-icon{font-size:1rem}
+.ph-title{font-family:Georgia,serif;font-size:1rem;color:var(--forest);flex:1}
+.ph-chevron{font-size:.8rem;color:var(--mist);transition:transform .25s;margin-left:auto;line-height:1}
+.ph.collapsed .ph-chevron{transform:rotate(-90deg)}
+.panel-body-wrap{overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.panel-body-wrap.collapsed{max-height:0!important}
+.pb{padding:1rem 1.2rem}
+
+/* CONTROLS */
+.ctrl-col{display:flex;flex-direction:column;gap:1rem}
 
 /* CAT LABEL */
-.cat{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:.5rem;margin:1rem 0 .8rem}
+.cat{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:.5rem;margin:.9rem 0 .7rem}
 .cat:first-child{margin-top:0}
 .cat::after{content:'';flex:1;height:1px;background:var(--cream-dk)}
 
 /* CONTROL ROW */
-.cr{margin-bottom:1rem}
+.cr{margin-bottom:.9rem}
 .cr:last-child{margin-bottom:0}
-.cl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem}
-.cn{font-family:system-ui,sans-serif;font-size:.8rem;font-weight:500;color:var(--forest)}
-.cv{font-family:'Courier New',monospace;font-size:.72rem;color:var(--sage);font-weight:500}
-.tick-row{display:flex;justify-content:space-between;margin-top:.25rem}
+.cl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.45rem}
+.cn{font-family:system-ui,sans-serif;font-size:.85rem;font-weight:500;color:var(--forest)}
+.cv{font-family:'Courier New',monospace;font-size:.78rem;color:var(--sage);font-weight:500}
+.tick-row{display:flex;justify-content:space-between;margin-top:.3rem}
 .tick{font-family:system-ui,sans-serif;font-size:.62rem;color:var(--mist)}
 
-/* SLIDER */
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:var(--cream-dk);outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--forest);cursor:pointer;border:2px solid var(--white);box-shadow:0 1px 4px rgba(15,30,23,.25);transition:transform .15s,background .15s}
-input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15);background:var(--sage)}
+/* SLIDERS - large touch targets */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--cream-dk);outline:none;cursor:pointer;touch-action:manipulation}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--forest);cursor:pointer;border:3px solid var(--white);box-shadow:0 2px 6px rgba(15,30,23,.3);transition:background .15s}
+input[type=range]:active::-webkit-slider-thumb{background:var(--sage)}
 
-/* SEGMENT */
-.seg{display:flex;background:var(--cream);border-radius:4px;padding:3px;gap:2px}
-.seg-btn{flex:1;padding:.38rem .25rem;font-family:system-ui,sans-serif;font-size:.71rem;font-weight:500;text-align:center;background:transparent;border:none;border-radius:3px;color:var(--mist);cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.2}
+/* SEGMENT - large tap targets */
+.seg{display:flex;background:var(--cream);border-radius:5px;padding:3px;gap:2px}
+.seg-btn{flex:1;padding:.55rem .2rem;font-family:system-ui,sans-serif;font-size:.75rem;font-weight:500;text-align:center;background:transparent;border:none;border-radius:4px;color:var(--mist);cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.2;min-height:40px;touch-action:manipulation}
 .seg-btn.on{background:var(--forest);color:var(--white);box-shadow:0 1px 4px rgba(15,30,23,.2)}
-.seg-btn:hover:not(.on){background:var(--cream-dk);color:var(--forest)}
+.seg-btn:active:not(.on){background:var(--cream-dk)}
 
 /* SELECT */
-select{width:100%;padding:.48rem 2rem .48rem .7rem;font-family:system-ui,sans-serif;font-size:.8rem;background:var(--cream);border:1px solid var(--cream-dk);border-radius:4px;color:var(--forest);cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a7c59' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center}
-select:focus{border-color:var(--sage)}
+select{width:100%;padding:.6rem 2rem .6rem .8rem;font-family:system-ui,sans-serif;font-size:.85rem;background:var(--cream);border:1px solid var(--cream-dk);border-radius:5px;color:var(--forest);cursor:pointer;outline:none;appearance:none;min-height:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a7c59' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center}
 
 /* OUTPUT COL */
-.out-col{display:flex;flex-direction:column;gap:1.2rem}
+.out-col{display:flex;flex-direction:column;gap:1rem}
+
+/* STICKY BOTTOM BAR */
+.sticky-bar{position:fixed;bottom:0;left:0;right:0;z-index:60;background:var(--forest);border-top:2px solid var(--sage);padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;box-shadow:0 -4px 20px rgba(15,30,23,.25)}
+.sticky-total-label{font-family:'Courier New',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-lt)}
+.sticky-total-num{font-family:Georgia,serif;font-size:1.6rem;color:var(--white);line-height:1}
+.sticky-co2{font-family:'Courier New',monospace;font-size:.62rem;color:rgba(253,250,245,.5);margin-top:.1rem}
+.sticky-btn{background:var(--sage);border:none;color:var(--white);font-family:system-ui,sans-serif;font-size:.8rem;font-weight:600;padding:.55rem 1.1rem;border-radius:5px;cursor:pointer;white-space:nowrap;touch-action:manipulation}
+.sticky-btn:active{background:var(--sage-lt)}
 
 /* TOTAL BANNER */
-.total{background:var(--forest);border-radius:var(--r);padding:1.6rem 1.8rem;display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:center}
-.t-eye{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sage-lt);margin-bottom:.25rem}
-.t-num{font-size:clamp(2.2rem,3vw,3rem);color:var(--white);line-height:1;margin-bottom:.25rem}
-.t-sub{font-family:system-ui,sans-serif;font-size:.75rem;color:rgba(253,250,245,.45);font-weight:300}
-.t-pills{display:flex;flex-direction:column;gap:.45rem;align-items:flex-end}
-.pill{font-family:'Courier New',monospace;font-size:.66rem;padding:.3rem .7rem;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(253,250,245,.65);white-space:nowrap}
-.pill.good{background:rgba(74,124,89,.35);color:var(--sage-pale)}
-.pill.bad{background:rgba(201,64,64,.28);color:#f5a0a0}
-.pill.warn{background:rgba(200,150,62,.3);color:var(--gold-lt)}
+.total{background:var(--forest);border-radius:var(--r);padding:1.4rem;display:flex;flex-direction:column;gap:.5rem}
+.t-eye{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sage-lt)}
+.t-num{font-family:Georgia,serif;font-size:2.4rem;color:var(--white);line-height:1}
+.t-sub{font-family:system-ui,sans-serif;font-size:.74rem;color:rgba(253,250,245,.45);font-weight:300}
+.t-pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.25rem}
+.pill{font-family:'Courier New',monospace;font-size:.66rem;padding:.3rem .65rem;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(253,250,245,.65);white-space:nowrap}
 
-/* CARDS */
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.card{background:var(--white);border:1px solid var(--cream-dk);border-radius:var(--r);padding:1rem 1.1rem;position:relative;overflow:hidden;transition:box-shadow .2s}
-.card:hover{box-shadow:0 4px 20px rgba(15,30,23,.09)}
+/* CARDS - 2 col on mobile */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.card{background:var(--white);border:1px solid var(--cream-dk);border-radius:var(--r);padding:.9rem 1rem;position:relative;overflow:hidden}
 .card-bar{position:absolute;bottom:0;left:0;right:0;height:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.card-ico{font-size:1.2rem;margin-bottom:.4rem;display:block}
-.card-lbl{font-family:'Courier New',monospace;font-size:.62rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mist);margin-bottom:.25rem}
-.card-val{font-size:1.4rem;color:var(--forest);line-height:1}
-.card-unit{font-family:'Courier New',monospace;font-size:.62rem;color:var(--mist);margin-top:.15rem}
-.card-pct{font-family:'Courier New',monospace;font-size:.62rem;margin-top:.1rem}
+.card-ico{font-size:1.1rem;margin-bottom:.3rem;display:block}
+.card-lbl{font-family:'Courier New',monospace;font-size:.58rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mist);margin-bottom:.2rem}
+.card-val{font-family:Georgia,serif;font-size:1.25rem;color:var(--forest);line-height:1}
+.card-unit{font-family:'Courier New',monospace;font-size:.6rem;color:var(--mist);margin-top:.1rem}
+.card-pct{font-family:'Courier New',monospace;font-size:.6rem;margin-top:.1rem}
 
-/* CHART TABS */
-.chart-tabs{display:flex;gap:.2rem;margin-bottom:1.25rem;border-bottom:1px solid var(--cream-dk)}
-.ctab{font-family:system-ui,sans-serif;font-size:.76rem;font-weight:500;padding:.45rem 1rem;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--mist);cursor:pointer;transition:all .15s;margin-bottom:-1px}
+/* CHART TABS - horizontally scrollable */
+.chart-tabs{display:flex;gap:0;margin-bottom:1rem;border-bottom:1px solid var(--cream-dk);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chart-tabs::-webkit-scrollbar{display:none}
+.ctab{font-family:system-ui,sans-serif;font-size:.76rem;font-weight:500;padding:.5rem .9rem;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--mist);cursor:pointer;white-space:nowrap;margin-bottom:-1px;touch-action:manipulation}
 .ctab.on{color:var(--forest);border-bottom-color:var(--gold)}
-.ctab:hover:not(.on){color:var(--forest)}
 .cview{display:none}
 .cview.on{display:block}
-.chart-wrap{position:relative;height:300px}
+.chart-wrap{position:relative;height:260px}
 canvas{display:block}
 
-/* BREAKDOWN TABLE */
-.bk-table{width:100%;border-collapse:collapse}
-.bk-table th{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);padding:.65rem 1.4rem;text-align:left;border-bottom:1px solid var(--cream-dk);background:var(--cream)}
+/* BREAKDOWN TABLE - horizontally scrollable */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.bk-table{width:100%;border-collapse:collapse;min-width:460px}
+.bk-table th{font-family:'Courier New',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);padding:.55rem 1rem;text-align:left;border-bottom:1px solid var(--cream-dk);background:var(--cream);white-space:nowrap}
 .bk-table th:last-child,.bk-table td:last-child{text-align:right}
-.bk-table td{font-family:system-ui,sans-serif;padding:.75rem 1.4rem;font-size:.82rem;border-bottom:1px solid rgba(237,230,214,.5)}
+.bk-table td{font-family:system-ui,sans-serif;padding:.65rem 1rem;font-size:.8rem;border-bottom:1px solid rgba(237,230,214,.5)}
 .bk-table tr:last-child td{border-bottom:none}
-.bk-table tbody tr:hover td{background:rgba(245,240,232,.6)}
-.td-cat{font-weight:500;color:var(--forest);display:flex;align-items:center;gap:.45rem}
-.td-desc{color:var(--mist);font-size:.75rem}
+.td-cat{font-weight:500;color:var(--forest);display:flex;align-items:center;gap:.4rem;white-space:nowrap}
+.td-desc{color:var(--mist);font-size:.73rem}
 .td-cost{font-family:'Courier New',monospace;font-weight:700}
 .td-cost.hi{color:var(--red)}
 .td-cost.lo{color:var(--sage)}
-.mini-bar-wrap{width:90px;height:5px;background:var(--cream-dk);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:.4rem}
+.mini-bar-wrap{width:70px;height:5px;background:var(--cream-dk);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:.35rem}
 .mini-bar{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
 
 /* INSIGHT */
-.insight{background:var(--gold-pale);border:1px solid rgba(200,150,62,.25);border-left:3px solid var(--gold);border-radius:var(--r);padding:1rem 1.25rem;font-family:system-ui,sans-serif;font-size:.83rem;line-height:1.65;color:var(--forest);display:none}
+.insight{background:var(--gold-pale);border:1px solid rgba(200,150,62,.25);border-left:3px solid var(--gold);border-radius:var(--r);padding:.9rem 1.1rem;font-family:system-ui,sans-serif;font-size:.8rem;line-height:1.65;color:var(--forest);display:none}
 .insight.show{display:block}
 .insight strong{font-weight:600}
 
-/* METH NOTE */
-.meth{font-family:system-ui,sans-serif;font-size:.71rem;color:var(--mist);font-style:italic;padding:.7rem 1.4rem;background:var(--cream);border-top:1px solid var(--cream-dk);line-height:1.6}
+/* METHOD NOTE */
+.meth{font-family:system-ui,sans-serif;font-size:.69rem;color:var(--mist);font-style:italic;padding:.65rem 1.2rem;background:var(--cream);border-top:1px solid var(--cream-dk);line-height:1.6}
+
+/* HARM */
+.harm-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem}
+.harm-card{background:var(--cream);border-radius:5px;padding:.9rem 1rem;border:1px solid var(--cream-dk);position:relative;overflow:hidden}
+.harm-card-accent{position:absolute;top:0;left:0;right:0;height:3px}
+.harm-icon{font-size:1.3rem;margin-bottom:.4rem;display:block}
+.harm-name{font-family:'Courier New',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);margin-bottom:.28rem}
+.harm-val{font-family:Georgia,serif;font-size:1.1rem;color:var(--forest);line-height:1;margin-bottom:.15rem}
+.harm-pct{font-family:'Courier New',monospace;font-size:.68rem;font-weight:600;margin-bottom:.4rem}
+.harm-desc{font-family:system-ui,sans-serif;font-size:.7rem;line-height:1.5;color:#5a7a6a;font-weight:300}
+.harm-bar-track{height:4px;background:rgba(0,0,0,.07);border-radius:2px;margin-top:.65rem;overflow:hidden}
+.harm-bar-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.wf-wrap{position:relative;height:220px;margin-bottom:.5rem}
+.wf-legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;margin-top:.5rem}
+.wf-leg-item{display:flex;align-items:center;gap:.35rem;font-family:system-ui,sans-serif;font-size:.68rem;color:#5a7a6a}
+.wf-leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.harm-tabs{display:flex;gap:0;margin-bottom:1rem;border-bottom:1px solid var(--cream-dk);overflow-x:auto;scrollbar-width:none}
+.harm-tabs::-webkit-scrollbar{display:none}
+.htab{font-family:system-ui,sans-serif;font-size:.74rem;font-weight:500;padding:.45rem .85rem;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--mist);cursor:pointer;white-space:nowrap;margin-bottom:-1px;touch-action:manipulation}
+.htab.on{color:var(--forest);border-bottom-color:#c94040}
+.hview{display:none}
+.hview.on{display:block}
+.src-chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.9rem;padding-top:.65rem;border-top:1px solid var(--cream-dk)}
+.src-chip{font-family:'Courier New',monospace;font-size:.58rem;padding:.2rem .5rem;background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.22);color:var(--gold);border-radius:3px}
 
 /* SOURCES */
-.src-item{display:flex;gap:.65rem;padding:.55rem 0;border-bottom:1px solid rgba(237,230,214,.5);align-items:baseline}
+.src-item{display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid rgba(237,230,214,.5);align-items:baseline}
 .src-item:last-child{border-bottom:none}
-.src-n{font-family:'Courier New',monospace;font-size:.6rem;color:var(--gold);flex-shrink:0}
-.src-t{font-family:system-ui,sans-serif;font-size:.76rem;line-height:1.6;color:#4a6055;font-weight:300}
+.src-n{font-family:'Courier New',monospace;font-size:.58rem;color:var(--gold);flex-shrink:0}
+.src-t{font-family:system-ui,sans-serif;font-size:.73rem;line-height:1.6;color:#4a6055;font-weight:300}
 .src-t em{font-style:italic;color:var(--forest-mid)}
+
+/* SENSITIVITY */
+.rng-card{background:var(--cream);border:1px solid var(--cream-dk);border-radius:5px;padding:.85rem 1rem;position:relative;overflow:hidden}
+.rng-card-accent{position:absolute;top:0;left:0;bottom:0;width:3px}
+.rng-card-title{font-family:'Courier New',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);margin-bottom:.3rem}
+.rng-card-vals{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap;margin-bottom:.3rem}
+.rng-lo{font-family:system-ui,sans-serif;font-size:.8rem;color:var(--sage)}
+.rng-mid{font-family:system-ui,sans-serif;font-size:1rem;font-weight:700;color:var(--forest)}
+.rng-hi{font-family:system-ui,sans-serif;font-size:.8rem;color:var(--red)}
+.rng-arrow{font-size:.68rem;color:var(--mist)}
+.rng-src{font-family:system-ui,sans-serif;font-size:.65rem;color:var(--mist);font-style:italic;line-height:1.45}
+
+/* METHODOLOGY TABS */
+#meth-tabs{overflow-x:auto;scrollbar-width:none}
+#meth-tabs::-webkit-scrollbar{display:none}
 
 /* ANIMATIONS */
 @keyframes pop{from{opacity:.3;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 .pop{animation:pop .28s ease both}
 
-@media(max-width:1100px){.wrap{grid-template-columns:1fr;padding:1.25rem}.cards{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.cards{grid-template-columns:1fr 1fr}.total{grid-template-columns:1fr}.t-pills{align-items:flex-start}.hdr-badge{display:none}}
-
-/* ── HARM TYPE SECTION ── */
-.harm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
-.harm-card{background:var(--cream);border-radius:5px;padding:1.1rem 1.2rem;border:1px solid var(--cream-dk);position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s}
-.harm-card:hover{box-shadow:0 6px 24px rgba(15,30,23,.1);transform:translateY(-1px)}
-.harm-card-accent{position:absolute;top:0;left:0;right:0;height:3px}
-.harm-icon{font-size:1.4rem;margin-bottom:.5rem;display:block}
-.harm-name{font-family:'Courier New',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);margin-bottom:.3rem}
-.harm-val{font-size:1.2rem;color:var(--forest);line-height:1;margin-bottom:.15rem}
-.harm-pct{font-family:'Courier New',monospace;font-size:.7rem;font-weight:600;margin-bottom:.45rem}
-.harm-desc{font-family:system-ui,sans-serif;font-size:.71rem;line-height:1.55;color:#5a7a6a;font-weight:300}
-.harm-bar-track{height:4px;background:rgba(0,0,0,.07);border-radius:2px;margin-top:.7rem;overflow:hidden}
-.harm-bar-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-.wf-wrap{position:relative;height:240px;margin-bottom:.5rem}
-.wf-legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;margin-top:.6rem}
-.wf-leg-item{display:flex;align-items:center;gap:.4rem;font-family:system-ui,sans-serif;font-size:.71rem;color:#5a7a6a}
-.wf-leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
-.harm-tabs{display:flex;gap:.2rem;margin-bottom:1.25rem;border-bottom:1px solid var(--cream-dk)}
-.htab{font-family:system-ui,sans-serif;font-size:.76rem;font-weight:500;padding:.45rem 1rem;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--mist);cursor:pointer;transition:all .15s;margin-bottom:-1px}
-.htab.on{color:var(--forest);border-bottom-color:#c94040}
-.htab:hover:not(.on){color:var(--forest)}
-.hview{display:none}
-.hview.on{display:block}
-.src-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--cream-dk)}
-.src-chip{font-family:'Courier New',monospace;font-size:.62rem;padding:.2rem .55rem;background:rgba(200,150,62,.1);border:1px solid rgba(200,150,62,.22);color:var(--gold);border-radius:3px}
-@media(max-width:900px){.harm-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:500px){.harm-grid{grid-template-columns:1fr}}
-
-/* SENSITIVITY ANALYSIS */
-.rng-card{background:var(--cream);border:1px solid var(--cream-dk);border-radius:5px;padding:.9rem 1.1rem;position:relative;overflow:hidden}
-.rng-card-accent{position:absolute;top:0;left:0;bottom:0;width:3px}
-.rng-card-title{font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);margin-bottom:.35rem}
-.rng-card-vals{display:flex;align-items:baseline;gap:.45rem;flex-wrap:wrap;margin-bottom:.35rem}
-.rng-lo{font-family:system-ui,sans-serif;font-size:.82rem;color:var(--sage)}
-.rng-mid{font-family:system-ui,sans-serif;font-size:1.05rem;font-weight:700;color:var(--forest)}
-.rng-hi{font-family:system-ui,sans-serif;font-size:.82rem;color:var(--red)}
-.rng-arrow{font-size:.7rem;color:var(--mist)}
-.rng-src{font-family:system-ui,sans-serif;font-size:.67rem;color:var(--mist);font-style:italic;line-height:1.45}
+/* TABLET+ */
+@media(min-width:700px){
+  .cards{grid-template-columns:repeat(4,1fr)}
+  .harm-grid{grid-template-columns:repeat(3,1fr)}
+  .wrap{padding:1.5rem 1.5rem 80px}
+}
+@media(min-width:960px){
+  .wrap{padding:1.75rem 2rem 2rem}
+  .sticky-bar{display:none}
+}
 </style>
 </head>
 <body>
@@ -190,7 +210,7 @@ canvas{display:block}
       <span class="hdr-sub">Externalities of Daily Life</span>
     </div>
     <div class="hdr-right">
-      <span class="hdr-badge">Academic Sources · Annual Estimates · 2024 USD</span>
+      <span class="hdr-badge">v1.2 · Mobile · Academic Sources · 2024 USD</span>
       <button class="hdr-reset" onclick="resetAll()">↺ Reset Defaults</button>
     </div>
   </div>
@@ -202,8 +222,8 @@ canvas{display:block}
 
     <!-- TRANSPORT -->
     <div class="panel">
-      <div class="ph"><span class="ph-icon">🚗</span><span class="ph-title">Transportation</span></div>
-      <div class="pb">
+      <div class="ph"><span class="ph-icon">🚗</span><span class="ph-title">Transportation</span><span class="ph-chevron">▾</span></div>
+      <div class="panel-body-wrap"><div class="pb">
         <div class="cat">Vehicle</div>
         <div class="cr">
           <div class="cl"><span class="cn">Primary vehicle type</span></div>
@@ -235,13 +255,13 @@ canvas{display:block}
           <div class="cl"><span class="cn">Bus / train miles per year</span><span class="cv" id="dv-transit">500 mi</span></div>
           <input type="range" id="sl-transit" min="0" max="10000" step="100" value="500" oninput="slVal('transit',this.value);go()">
         </div>
-      </div>
+      </div></div>
     </div>
 
     <!-- FOOD -->
     <div class="panel">
-      <div class="ph"><span class="ph-icon">🌿</span><span class="ph-title">Food &amp; Diet</span></div>
-      <div class="pb">
+      <div class="ph"><span class="ph-icon">🌿</span><span class="ph-title">Food &amp; Diet</span><span class="ph-chevron">▾</span></div>
+      <div class="panel-body-wrap"><div class="pb">
         <div class="cat">Diet Pattern</div>
         <div class="cr">
           <div class="cl"><span class="cn">Primary diet type</span></div>
@@ -267,13 +287,13 @@ canvas{display:block}
           <input type="range" id="sl-takeout" min="0" max="10" step="1" value="2" oninput="slVal('takeout',this.value);go()">
           <div class="tick-row"><span class="tick">0</span><span class="tick">← US avg ~4–5/wk</span><span class="tick">10</span></div>
         </div>
-      </div>
+      </div></div>
     </div>
 
     <!-- ENERGY -->
     <div class="panel">
-      <div class="ph"><span class="ph-icon">⚡</span><span class="ph-title">Home Energy</span></div>
-      <div class="pb">
+      <div class="ph"><span class="ph-icon">⚡</span><span class="ph-title">Home Energy</span><span class="ph-chevron">▾</span></div>
+      <div class="panel-body-wrap"><div class="pb">
         <div class="cat">Electricity</div>
         <div class="cr">
           <div class="cl"><span class="cn">Grid power source</span></div>
@@ -306,13 +326,13 @@ canvas{display:block}
           <input type="range" id="sl-sqft" min="400" max="4000" step="100" value="1800" oninput="slVal('sqft',this.value);go()">
           <div class="tick-row"><span class="tick">Small apt</span><span class="tick">← US median ~2,200</span><span class="tick">4,000 sq ft</span></div>
         </div>
-      </div>
+      </div></div>
     </div>
 
     <!-- CONSUMER -->
     <div class="panel">
-      <div class="ph"><span class="ph-icon">🛍️</span><span class="ph-title">Consumer Choices</span></div>
-      <div class="pb">
+      <div class="ph"><span class="ph-icon">🛍️</span><span class="ph-title">Consumer Choices</span><span class="ph-chevron">▾</span></div>
+      <div class="panel-body-wrap"><div class="pb">
         <div class="cat">Clothing &amp; Electronics</div>
         <div class="cr">
           <div class="cl"><span class="cn">New clothing items / month</span><span class="cv" id="dv-clothes">2</span></div>
@@ -339,7 +359,7 @@ canvas{display:block}
           <input type="range" id="sl-stream" min="0" max="10" step="1" value="4" oninput="slVal('stream',this.value);go()">
           <div class="tick-row"><span class="tick">0 hrs</span><span class="tick">← US avg ~3 hrs</span><span class="tick">10 hrs</span></div>
         </div>
-      </div>
+      </div></div>
     </div>
   </div><!-- /ctrl-col -->
 
@@ -347,7 +367,7 @@ canvas{display:block}
   <div class="out-col">
 
     <!-- TOTAL -->
-    <div class="total">
+    <div id="results-top" class="total">
       <div>
         <div class="t-eye">Total Annual Externality Cost</div>
         <div class="t-num" id="t-num">$—</div>
@@ -401,7 +421,7 @@ canvas{display:block}
 
     <!-- CHARTS -->
     <div class="panel">
-      <div class="ph"><span class="ph-icon">📊</span><span class="ph-title">Externality Breakdown</span></div>
+      <div class="ph"><span class="ph-icon">📊</span><span class="ph-title">Externality Breakdown</span><span class="ph-chevron">▾</span></div>
       <div class="pb">
         <div class="chart-tabs">
           <button class="ctab on" onclick="switchTab('bar',this)">By Category</button>
@@ -430,7 +450,7 @@ canvas{display:block}
 
     <!-- HARM TYPE SECTION -->
     <div class="panel">
-      <div class="ph"><span class="ph-icon">⚠️</span><span class="ph-title">What Type of Harm Do These Externalities Cause?</span></div>
+      <div class="ph"><span class="ph-icon">⚠️</span><span class="ph-title">What Type of Harm Do These Externalities Cause?</span><span class="ph-chevron">▾</span></div>
       <div class="pb">
         <div class="harm-tabs">
           <button class="htab on" onclick="switchHarm('cards',this)">Harm Categories</button>
@@ -487,25 +507,25 @@ canvas{display:block}
 
     <!-- BREAKDOWN TABLE -->
     <div class="panel">
-      <div class="ph"><span class="ph-icon">📋</span><span class="ph-title">Line-Item Breakdown</span></div>
-      <table class="bk-table">
+      <div class="ph"><span class="ph-icon">📋</span><span class="ph-title">Line-Item Breakdown</span><span class="ph-chevron">▾</span></div>
+      <div class="table-scroll"><table class="bk-table">
         <thead>
           <tr>
             <th>Item</th>
             <th>Your Inputs</th>
-            <th style="width:140px">Relative Impact</th>
+            <th style="width:100px">Impact</th>
             <th>Annual Cost</th>
           </tr>
         </thead>
         <tbody id="bk-body"><tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--mist)">Loading…</td></tr></tbody>
-      </table>
+      </table></div>
       <div class="meth">All figures in 2024 USD. Social Cost of Carbon: $190/tCO₂e (EPA, 2023, 2.5% discount rate). Diet externalities from FAO True Cost of Food (2021) &amp; True Price Foundation (2022). Vehicle rates from NAS Hidden Costs of Energy (2010) + EPA SCC. Flight RF multiplier: 1.9× (IPCC AR6, 2022). Grid externalities: Epstein et al. (2011) for coal; NREL lifecycle assessments for renewables/nuclear.</div>
     </div>
 
 
     <!-- SOURCES -->
     <div class="panel">
-      <div class="ph"><span class="ph-icon">📚</span><span class="ph-title">Academic Sources &amp; Methodology</span></div>
+      <div class="ph"><span class="ph-icon">📚</span><span class="ph-title">Academic Sources &amp; Methodology</span><span class="ph-chevron">▾</span></div>
       <div class="pb">
         <div class="src-item"><div class="src-n">[1]</div><div class="src-t">U.S. EPA. (2023). <em>Revised 2023 supplementary material for the regulatory impact analysis: Social cost of greenhouse gases.</em> Central estimate: $190/tCO₂e at 2.5% discount rate. Applied to all carbon emissions throughout this calculator.</div></div>
         <div class="src-item"><div class="src-n">[2]</div><div class="src-t">National Academies of Sciences. (2010). <em>Hidden Costs of Energy: Unpriced Consequences of Energy Production and Use.</em> National Academies Press. Source for vehicle air-quality externalities ($0.007–$0.014/mile) and natural gas health costs.</div></div>
@@ -532,7 +552,7 @@ canvas{display:block}
 
     <!-- METHODOLOGY TABS -->
     <div class="panel">
-      <div class="ph"><span class="ph-icon">🔬</span><span class="ph-title">Methodology — How This Calculator Works</span></div>
+      <div class="ph"><span class="ph-icon">🔬</span><span class="ph-title">Methodology — How This Calculator Works</span><span class="ph-chevron">▾</span></div>
       <div class="pb">
         <div class="chart-tabs" id="meth-tabs">
           <button class="ctab on" onclick="switchMeth('notincluded',this)">What's Not Included</button>
@@ -642,6 +662,18 @@ canvas{display:block}
 
   </div><!-- /out-col -->
 </div><!-- /wrap -->
+
+<!-- STICKY BOTTOM BAR (mobile only, hidden on desktop via CSS) -->
+<div class="sticky-bar" id="sticky-bar">
+  <div>
+    <div class="sticky-total-label">Annual Externalities</div>
+    <div class="sticky-total-num" id="sticky-num">$—</div>
+    <div class="sticky-co2" id="sticky-co2">CO₂e: — t/yr</div>
+  </div>
+  <button class="sticky-btn" onclick="document.getElementById('results-top').scrollIntoView({behavior:'smooth'})">
+    See Results ↓
+  </button>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -889,6 +921,7 @@ function go() {
   tn.classList.add('pop');
 
   document.getElementById('p-co2').textContent='CO₂e: ~'+Math.round(r.co2)+' t/yr';
+  updateStickyBar(r.total, r.co2);
 
   // Cards
   const vals=[r.transport,r.food,r.energy,r.consumer];
@@ -1247,7 +1280,109 @@ function drawSensitivityRange() {
 }
 
 window.addEventListener('resize',()=>go());
-document.addEventListener('DOMContentLoaded',()=>go());
+document.addEventListener('DOMContentLoaded',()=>{
+  go();
+  initAccordion();
+  initCollapsibleOutputPanels();
+});
+
+// ═══════════════════════════════════════════════
+// MOBILE: ACCORDION CONTROLS
+// ═══════════════════════════════════════════════
+function initAccordion() {
+  // Make each control panel collapsible via its header
+  const ctrlPanels = document.querySelectorAll('.ctrl-col .panel');
+  ctrlPanels.forEach((panel, i) => {
+    const ph = panel.querySelector('.ph');
+    const wrap = panel.querySelector('.panel-body-wrap');
+    if (!ph || !wrap) return;
+
+    // Set max-height to current scrollHeight so CSS transition works
+    wrap.style.maxHeight = wrap.scrollHeight + 'px';
+
+    // Collapse all but the first panel on mobile
+    if (i > 0 && window.innerWidth < 700) {
+      wrap.style.maxHeight = '0px';
+      wrap.classList.add('collapsed');
+      ph.classList.add('collapsed');
+    }
+
+    ph.addEventListener('click', () => {
+      const isCollapsed = wrap.classList.contains('collapsed');
+      if (isCollapsed) {
+        wrap.classList.remove('collapsed');
+        ph.classList.remove('collapsed');
+        wrap.style.maxHeight = wrap.scrollHeight + 'px';
+      } else {
+        wrap.style.maxHeight = wrap.scrollHeight + 'px'; // force reflow
+        requestAnimationFrame(() => {
+          wrap.classList.add('collapsed');
+          ph.classList.add('collapsed');
+          wrap.style.maxHeight = '0px';
+        });
+      }
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════
+// MOBILE: COLLAPSIBLE OUTPUT PANELS
+// ═══════════════════════════════════════════════
+function initCollapsibleOutputPanels() {
+  // On mobile, collapse Sources and Methodology by default (they're long)
+  if (window.innerWidth >= 700) return;
+  const outPanels = document.querySelectorAll('.out-col .panel');
+  const collapseByDefault = ['📚', '🔬']; // Sources and Methodology by icon
+  outPanels.forEach(panel => {
+    const ph = panel.querySelector('.ph');
+    if (!ph) return;
+    const icon = ph.querySelector('.ph-icon');
+    if (!icon) return;
+    const pb = panel.querySelector('.pb');
+    if (!pb) return;
+    // Wrap pb if not already wrapped
+    if (!pb.parentElement.classList.contains('panel-body-wrap')) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'panel-body-wrap';
+      pb.parentNode.insertBefore(wrapper, pb);
+      wrapper.appendChild(pb);
+    }
+    const wrap = pb.parentElement;
+    wrap.style.maxHeight = wrap.scrollHeight + 'px';
+    if (collapseByDefault.includes(icon.textContent.trim())) {
+      wrap.style.maxHeight = '0px';
+      wrap.classList.add('collapsed');
+      ph.classList.add('collapsed');
+    }
+    ph.style.cursor = 'pointer';
+    ph.addEventListener('click', () => {
+      const isCollapsed = wrap.classList.contains('collapsed');
+      if (isCollapsed) {
+        wrap.classList.remove('collapsed');
+        ph.classList.remove('collapsed');
+        wrap.style.maxHeight = wrap.scrollHeight + 'px';
+        // Re-measure after animation for dynamic content
+        setTimeout(() => { wrap.style.maxHeight = wrap.scrollHeight + 'px'; }, 360);
+      } else {
+        requestAnimationFrame(() => {
+          wrap.classList.add('collapsed');
+          ph.classList.add('collapsed');
+          wrap.style.maxHeight = '0px';
+        });
+      }
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════
+// MOBILE: STICKY BAR UPDATE
+// ═══════════════════════════════════════════════
+function updateStickyBar(total, co2) {
+  const num = document.getElementById('sticky-num');
+  const co2El = document.getElementById('sticky-co2');
+  if (num) num.textContent = '$' + Math.round(total).toLocaleString();
+  if (co2El) co2El.textContent = 'CO₂e: ~' + Math.round(co2) + ' t/yr';
+}
 
 // ═══════════════════════════════════════════════
 // HARM-TYPE BREAKDOWN
